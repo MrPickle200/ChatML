@@ -59,14 +59,18 @@ Một file thuộc dataset.
 ```json
 {
   "_id": "doc_001",
-  "dataset_id": "dataset_001",
+  "dataset_id": null, // tạm thời để null
   "filename": "lecture_1.pdf",
   "file_type": "pdf",
   "file_size_bytes":12345,
   "version": 1,
   "status": "indexed",
   "created_at": "2026-06-08T10:05:00Z",
-  "updated_at": "2026-06-08T10:05:00Z"
+  "updated_at": "2026-06-08T10:05:00Z",
+  "storage" : {
+    "provider" : "local",
+    "uri" : "..."
+  }
 }
 ```
 
@@ -83,6 +87,7 @@ Một file thuộc dataset.
 | status | string | uploaded/indexed/failed |
 | created_at | datetime | Upload time |
 | updated_at | datetime | Update time |
+| storage | json | Storage path |
 
 ---
 
