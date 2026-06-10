@@ -78,7 +78,7 @@ Một file thuộc dataset.
 | dataset_id | ObjectId | Parent dataset |
 | filename | string | File name |
 | file_type | string | pdf/docx/txt |
-| file_size | int | file size in bytes |
+| file_size_bytes | int | file size in bytes |
 | version | int | Version number |
 | status | string | uploaded/indexed/failed |
 | created_at | datetime | Upload time |
@@ -138,6 +138,7 @@ Tin nhắn trong hội thoại.
 | conversation_id | ObjectId |
 | role | string |
 | content | string |
+| sources | list[string] |
 | created_at | datetime |
 
 ---
@@ -185,6 +186,14 @@ Dimension: 768
 Distance: Cosine
 ```
 
+## Point Structure
+
+| Component | Type | Description |
+|-----------|------|-------------|
+| id | UUID/Uint | Ánh xạ trực tiếp từ `chunk_id` |
+| vector | list[float] | Mảng vector sinh ra từ Embedding Model |
+| payload | object | JSON chứa siêu dữ liệu (định nghĩa bên dưới) |
+
 ---
 
 # Chunk Payload
@@ -195,11 +204,12 @@ Distance: Cosine
 {
   "dataset_id": "dataset_001",
   "document_id": "doc_001",
-  "chunk_id": "chunk_001",
+  "chunk_id": "123e4567-e89b-12d3-a456-426614174000",
   "chunk_index": 1, 
   "chunk_text": "Gradient descent is...",
   "source": "lecture_1.pdf",
-  "version": 1
+  "version": 1,
+  "embedding_model": "gemini-embedding-001"
 }
 ```
 
@@ -209,13 +219,19 @@ Distance: Cosine
 |---------|---------|---------|
 | dataset_id | string | Dataset reference |
 | document_id | string | Document reference |
-| chunk_id | string | Chunk identifier |
+| chunk_id | UUID | Chunk identifier |
 | chunk_index | int | Chunk index |
 | chunk_text | string | Original chunk |
 | source | string | File name |
 | version | int | Document version |
+| embedding_model | string | Embedding model's name |
 
 ---
+
+# Role:
+- user
+- assistant
+- system
 
 # Relationships
 
@@ -224,7 +240,7 @@ Dataset (1)
  └── Documents (N)
       
 Documents (1)
-      └── Chunks (Qdrant) (N)
+  └── Chunks payload (Qdrant) (N)
 
 Conversation (1)
  └── Messages (N)
