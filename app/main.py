@@ -6,8 +6,8 @@ app = FastAPI()
 app.include_router(document_router)
 
 @app.get("/")
-def health():
-    return {"status" : "hello"}
+def health_check():
+    return {"status" : "healthy"}
 
 @app.get("/test-db")
 async def test_db():
