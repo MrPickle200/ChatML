@@ -20,6 +20,9 @@ class Settings(BaseSettings):
     chunk_size: int
     chunk_overlap: int
 
+    # Embedding
+    embedding_model: str
+
     model_config = SettingsConfigDict(
         env_file=".env",
         extra="ignore",

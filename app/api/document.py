@@ -5,6 +5,14 @@ from app.repositories.document_repository import MongoDocumentRepository
 from app.storage.document_storage import LocalStorage
 from app.services.document_service import DocumentService
 
+from app.database.qdrant import client as qdrant_client
+from app.services.ingestion_service import IngestionService
+from app.services.parsing_service import ParsingService
+from app.services.chunking_service import ChunkingService
+from app.services.embedding_service import EmbeddingService
+from app.repositories.qdrant_repository import QdrantRepository
+
+
 UPLOAD_DIR = Path("data") / "test"
 
 router = APIRouter(prefix="/document")
@@ -13,8 +21,18 @@ router = APIRouter(prefix="/document")
 def get_service() -> DocumentService:
     repository = MongoDocumentRepository(document_collection)
     storage = LocalStorage(UPLOAD_DIR)
-    return DocumentService(repository, storage)
+    
+    qdrant_repo = QdrantRepository(qdrant_client)
+    qdrant_repo.create_collection()
+    
+    ingestion = IngestionService(
+        parsing_service= ParsingService(),
+        chunking_service= ChunkingService(),
+        embedding_service= EmbeddingService(),
+        qdrant_repo= QdrantRepository(qdrant_client)
+    )
 
+    return DocumentService(repository, storage, ingestion)
 
 @router.post("/upload-document")
 async def upload_document(

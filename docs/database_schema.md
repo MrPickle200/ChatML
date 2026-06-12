@@ -207,7 +207,7 @@ Distance: Cosine
 
 ```json
 {
-  "dataset_id": "dataset_001",
+  "dataset_id": "dataset_001", // tạm thời để none 
   "document_id": "doc_001",
   "chunk_id": "123e4567-e89b-12d3-a456-426614174000",
   "chunk_index": 1, 

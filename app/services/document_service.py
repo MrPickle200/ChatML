@@ -1,6 +1,8 @@
 from pathlib import Path
 from datetime import datetime, timezone
 from fastapi import HTTPException, UploadFile
+from app.models.document import Document
+from app.services.ingestion_service import IngestionService
 import uuid
 
 ALLOWED_EXTENSIONS = {"pdf", "docx", "txt", "md"}
@@ -9,9 +11,10 @@ MAX_FILE_SIZE_BYTES = 50 * 1024 * 1024  # 50MB
 
 class DocumentService:
 
-    def __init__(self, repository, storage):
+    def __init__(self, repository, storage, ingestion_service : IngestionService):
         self.repository = repository
         self.storage = storage
+        self.ingestion = ingestion_service
 
 
     async def _validate_file(self, file: UploadFile):
@@ -73,11 +76,26 @@ class DocumentService:
             path = await self.storage.save(file, document_id)
             metadata = self._build_metadata(document_id, file, path)
             await self.repository.insert(metadata)
+
+            document = Document(
+                document_id= document_id,
+                file_path= metadata["storage"]["uri"],
+                filename= metadata["filename"],
+                version= metadata["version"]
+            )
+            response = self.ingestion.ingest_document(document)
+
         except Exception as e:
             self.storage.delete(document_id)
             raise HTTPException(status_code=500, detail=str(e))
 
-        return {"status": "ok", "document_id": document_id, "message": "Document uploaded"}
+        return {
+            "status": "ok", 
+            "document_id": document_id, 
+            "message": "Document uploaded",
+            "chunks_created": response["chunks_created"],
+            "points_created": response["points_created"]
+        }
 
 
     async def update_document(self, document_id: str, file: UploadFile) -> dict:
@@ -97,6 +115,7 @@ class DocumentService:
 
         return {"status": "ok", "document_id": document_id, "message": "Document updated"}
 
+        #TODO: re-embed sau update
 
     async def get_by_id(self, document_id: str) -> dict:
         doc = await self.repository.find_by_id(document_id)

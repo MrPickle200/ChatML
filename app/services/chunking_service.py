@@ -10,7 +10,7 @@ class ChunkingService:
             chunk_overlap = settings.chunk_overlap
         )
 
-    def chunk_text(self, text: str, document_id: str):
+    def chunk_text(self, text: str, document_id: str) -> list[Chunk]:
         texts = self.splitter.split_text(text)
         chunks = []
         for chunk_idx, text_chunk in enumerate(texts):
