@@ -3,6 +3,8 @@ from datetime import datetime, timezone
 from fastapi import HTTPException, UploadFile
 from app.models.document import Document
 from app.services.ingestion_service import IngestionService
+from app.repositories.document_repository import MongoDocumentRepository
+from app.storage.document_storage import LocalStorage
 import uuid
 
 ALLOWED_EXTENSIONS = {"pdf", "docx", "txt", "md"}
@@ -11,7 +13,7 @@ MAX_FILE_SIZE_BYTES = 50 * 1024 * 1024  # 50MB
 
 class DocumentService:
 
-    def __init__(self, repository, storage, ingestion_service : IngestionService):
+    def __init__(self, repository : MongoDocumentRepository, storage : LocalStorage, ingestion_service : IngestionService):
         self.repository = repository
         self.storage = storage
         self.ingestion = ingestion_service
@@ -83,10 +85,11 @@ class DocumentService:
                 filename= metadata["filename"],
                 version= metadata["version"]
             )
-            response = self.ingestion.ingest_document(document)
+            response = await self.ingestion.ingest_document(document)
 
         except Exception as e:
-            self.storage.delete(document_id)
+            await self.repository.delete(document_id)
+            await self.storage.delete(document_id)
             raise HTTPException(status_code=500, detail=str(e))
 
         return {
@@ -117,14 +120,13 @@ class DocumentService:
                 filename= update_metadata["filename"],
                 version= update_metadata["version"]
             )
-            self.ingestion.update_document(document)
+            await self.ingestion.update_document(document)
 
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
 
         return {"status": "ok", "document_id": document_id, "message": "Document updated"}
-
-        #TODO: re-embed sau update
+    
 
     async def get_by_id(self, document_id: str) -> dict:
         doc = await self.repository.find_by_id(document_id)
@@ -146,13 +148,12 @@ class DocumentService:
         try:
             self.storage.delete(document_id)
             await self.repository.delete(document_id)
-            self.ingestion.delete_document(document_id)
+            await self.ingestion.delete_document(document_id)
         except FileNotFoundError:
             # File đã bị xóa tay khỏi disk, vẫn xóa record trong DB
             await self.repository.delete(document_id)
-            self.ingestion.delete_document(document_id)
+            await self.ingestion.delete_document(document_id)
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
 
         return {"status": "ok", "document_id" : document_id, "message" : "Document deleted"}
-        #TODO: xoa vector sau khi xoa tai lieu

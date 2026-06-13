@@ -1,59 +1,78 @@
-from qdrant_client import QdrantClient
+from qdrant_client import AsyncQdrantClient
 from qdrant_client.models import Distance, VectorParams, PointStruct, Filter, FieldCondition, MatchValue, UpdateResult, FilterSelector
 from app.core.config import settings
 
 class QdrantRepository:
-    def __init__(self, client : QdrantClient):
+    def __init__(self, client : AsyncQdrantClient):
         self.client = client
         self.collection_name = settings.qdrant_collection_name
 
-    def create_collection(self):
-        if not self.collection_exist():
-            self.client.create_collection(
+    async def create_collection(self):
+        if not await self.collection_exist():
+            await self.client.create_collection(
                 collection_name= self.collection_name,
                 vectors_config= VectorParams(size= settings.qdrant_vector_size, distance= Distance.COSINE)
             )
 
-    def collection_exist(self):
-        return self.client.collection_exists(self.collection_name)
+    async def collection_exist(self):
+        return await self.client.collection_exists(self.collection_name)
 
-    def upsert_points(self, points : list[PointStruct]):
-        self.client.upsert(
+    async def upsert_points(self, points : list[PointStruct]):
+        await self.client.upsert(
             collection_name= self.collection_name,
             points= points,
             wait= True
         )
 
-    def get_point(self, point_id : str):
-        return self.client.retrieve(
-            collection_name= self.collection_name,
-            ids= [point_id]
-        )
-
-    def delete_points(self, point_ids: list[str]):
-        self.client.delete(
-            collection_name= self.collection_name,
-            points_selector= point_ids
-        )
-
-    def delete_by_document_id(self, document_id: str) -> UpdateResult:
+    async def delete_by_document_id(self, document_id: str) -> UpdateResult:
         filter = Filter(
             must=[
                 FieldCondition(key="document_id", match=MatchValue(value=document_id))
             ]
         )
-        return self.client.delete(
+        return await self.client.delete(
             collection_name=settings.qdrant_collection_name,
             points_selector=FilterSelector(filter=filter),
             wait=True,
         )
         
 
-    def search(self, query_vector: list[float], top_k: int = 5, threshold: float | None = None):
-        return self.client.search(
-            collection_name= self.collection_name,
-            query_vector= query_vector,
-            limit= top_k,
-            score_threshold= threshold,
-            with_payload= True
-        )
+    async def search(
+            self, query_vector: list[float], 
+            top_k: int, 
+            dataset_id: str | None = None, 
+            threshold: float | None = None
+    ):
+        
+        if dataset_id:
+            filter = Filter(
+                must=[
+                    FieldCondition(key="dataset_id", match=MatchValue(value=dataset_id))
+                ]
+            )
+            result = await self.client.query_points(
+                collection_name= self.collection_name,
+                query= query_vector,
+                limit= top_k,
+                score_threshold= threshold,
+                with_payload= True,
+                query_filter= FilterSelector(filter= filter)
+            )
+        else:
+            result = await self.client.query_points(
+                collection_name= self.collection_name,
+                query= query_vector,
+                limit= top_k,
+                score_threshold= threshold,
+                with_payload= True,
+                query_filter= None
+            )
+
+        return [
+            {
+                "id": point.id,
+                "score": point.score,
+                "payload": point.payload,
+            }
+            for point in result.points
+        ]

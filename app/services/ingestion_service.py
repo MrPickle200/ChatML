@@ -44,7 +44,7 @@ class IngestionService:
             payload= payload
         )
 
-    def ingest_document(self, document: Document):
+    async def ingest_document(self, document: Document):
         file_path = document.file_path
         document_id = document.document_id
 
@@ -59,7 +59,7 @@ class IngestionService:
             point = self._build_point(chunk, vector, document)
             points.append(point)
 
-        self.qdrant_repo.upsert_points(points)
+        await self.qdrant_repo.upsert_points(points)
 
         return {
             "document_id" : document.document_id,
@@ -67,11 +67,11 @@ class IngestionService:
             "points_created" : len(points)
         }
     
-    def delete_document(self, document_id: str):
-        self.qdrant_repo.delete_by_document_id(document_id)
+    async def delete_document(self, document_id: str):
+        await self.qdrant_repo.delete_by_document_id(document_id)
 
-    def update_document(self, document: Document):
+    async def update_document(self, document: Document):
         document_id = document.document_id
-        self.delete_document(document_id)
-        self.ingest_document(document)
+        await self.delete_document(document_id)
+        await self.ingest_document(document)
         

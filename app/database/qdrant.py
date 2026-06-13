@@ -1,7 +1,7 @@
 from app.core.config import settings
-from qdrant_client import QdrantClient
+from qdrant_client import AsyncQdrantClient
 
-client = QdrantClient(
+client = AsyncQdrantClient(
     host=settings.qdrant_host,
     port=settings.qdrant_port,
 )
