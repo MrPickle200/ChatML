@@ -1,5 +1,5 @@
 from qdrant_client import QdrantClient
-from qdrant_client.models import Distance, VectorParams, PointStruct
+from qdrant_client.models import Distance, VectorParams, PointStruct, Filter, FieldCondition, MatchValue, UpdateResult, FilterSelector
 from app.core.config import settings
 
 class QdrantRepository:
@@ -35,6 +35,19 @@ class QdrantRepository:
             collection_name= self.collection_name,
             points_selector= point_ids
         )
+
+    def delete_by_document_id(self, document_id: str) -> UpdateResult:
+        filter = Filter(
+            must=[
+                FieldCondition(key="document_id", match=MatchValue(value=document_id))
+            ]
+        )
+        return self.client.delete(
+            collection_name=settings.qdrant_collection_name,
+            points_selector=FilterSelector(filter=filter),
+            wait=True,
+        )
+        
 
     def search(self, query_vector: list[float], top_k: int = 5, threshold: float | None = None):
         return self.client.search(

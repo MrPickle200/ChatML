@@ -66,3 +66,12 @@ class IngestionService:
             "chunks_created" : len(chunks),
             "points_created" : len(points)
         }
+    
+    def delete_document(self, document_id: str):
+        self.qdrant_repo.delete_by_document_id(document_id)
+
+    def update_document(self, document: Document):
+        document_id = document.document_id
+        self.delete_document(document_id)
+        self.ingest_document(document)
+        

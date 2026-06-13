@@ -16,7 +16,7 @@ from app.repositories.qdrant_repository import QdrantRepository
 UPLOAD_DIR = Path("data") / "test"
 
 router = APIRouter(prefix="/document")
-
+embedding_service = EmbeddingService()
 
 def get_service() -> DocumentService:
     repository = MongoDocumentRepository(document_collection)
@@ -28,7 +28,7 @@ def get_service() -> DocumentService:
     ingestion = IngestionService(
         parsing_service= ParsingService(),
         chunking_service= ChunkingService(),
-        embedding_service= EmbeddingService(),
+        embedding_service= embedding_service,
         qdrant_repo= QdrantRepository(qdrant_client)
     )
 

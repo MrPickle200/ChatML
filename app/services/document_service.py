@@ -110,6 +110,15 @@ class DocumentService:
             path = await self.storage.replace(file, old_path)
             update_metadata = self._build_update_metadata(current_doc, file, path)
             await self.repository.update(document_id, update_metadata)
+
+            document = Document(
+                document_id= document_id,
+                file_path= str(path),
+                filename= update_metadata["filename"],
+                version= update_metadata["version"]
+            )
+            self.ingestion.update_document(document)
+
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
 
@@ -137,10 +146,13 @@ class DocumentService:
         try:
             self.storage.delete(document_id)
             await self.repository.delete(document_id)
+            self.ingestion.delete_document(document_id)
         except FileNotFoundError:
             # File đã bị xóa tay khỏi disk, vẫn xóa record trong DB
             await self.repository.delete(document_id)
+            self.ingestion.delete_document(document_id)
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
 
-        return {"status": "ok"}
+        return {"status": "ok", "document_id" : document_id, "message" : "Document deleted"}
+        #TODO: xoa vector sau khi xoa tai lieu
