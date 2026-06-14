@@ -77,6 +77,12 @@ async def delete_document(
 ):
     return await service.delete(document_id)
 
-@router.get("/retrieval")
-async def retrieval(query: str = "test querry", service: RetrievalService = Depends(get_retrieval_service)):
-    return await service.search(query, threshold= 0)
+@router.post("/retrieval")
+async def retrieval(
+    query: str = "test querry", 
+    top_k: int = 5, 
+    threshold: float = 0.5, 
+    dataset_ids: list[str] | None = None, 
+    service: RetrievalService = Depends(get_retrieval_service)
+):
+    return await service.search(query, dataset_ids, top_k, threshold)

@@ -11,6 +11,7 @@ mock_qdrant_class = patcher_qdrant.start()
 from fastapi.testclient import TestClient
 from app.main import app
 from app.api.document import get_document_service, get_retrieval_service
+from app.models.retrieved_chunk import RetrievedChunk
 
 # Setup mock services
 mock_doc_service = MagicMock()
@@ -80,12 +81,28 @@ def test_api_delete_document():
     mock_doc_service.delete.assert_called_once_with("123")
 
 def test_api_retrieval():
-    mock_ret_service.search = AsyncMock(return_value=[])
+    mock_ret_service.search = AsyncMock(return_value=[
+        RetrievedChunk(
+            chunk_id="c1",
+            document_id="d1",
+            dataset_id="ds1",
+            chunk_text="hello",
+            score=0.9
+        )
+    ])
     
     response = client.get("/document/retrieval?query=test")
     
     assert response.status_code == 200
-    assert response.json() == []
+    assert response.json() == [
+        {
+            "chunk_id": "c1",
+            "document_id": "d1",
+            "dataset_id": "ds1",
+            "chunk_text": "hello",
+            "score": 0.9
+        }
+    ]
     mock_ret_service.search.assert_called_once_with("test", threshold=0)
 
 # Stop patchers when the module finishes (not strictly necessary but clean)
