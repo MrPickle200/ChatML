@@ -8,6 +8,11 @@ Built with **FastAPI**, ChatML manages document ingestion, parsing, chunking, lo
 
 ## 🚀 Key Features
 
+* **Interactive Web Chat UI (`/web/`):** A sleek, modern Single Page Application (SPA) designed with a premium dark theme and glassmorphism. It provides:
+    * **Connection Status Indicator:** Real-time API server online/offline tracking.
+    * **Document Knowledge Base:** Dynamic list displaying all ingested document names, versions, and sizes. Includes document delete controls that automatically synchronize with the MongoDB and Qdrant backends.
+    * **Drag-and-Drop Uploader:** Supports `.pdf`, `.docx`, `.txt`, and `.md` files up to 50MB with an interactive upload and parsing progress bar.
+    * **Advanced Chat Window:** Supports streaming/typing indicators, source citations (linking response elements back to source document chunks), Markdown parsing (via marked.js), and syntax-highlighted code blocks (via Prism.js).
 * **AI Chatbot (`/chat/chat`):** Contextual Q&A using Google Gemini API (`gemini-2.5-flash-lite`), utilizing retrieved document snippets to answer user queries with reference citations.
 * **Multi-Format Parsing:** Extracts raw text from `.pdf`, `.docx`, `.txt`, and `.md` files using `unstructured`.
 * **Smart Text Chunking:** Splits text into overlapping segments using LangChain's `RecursiveCharacterTextSplitter` to preserve context.
@@ -74,6 +79,10 @@ ChatML/
 │   ├── test_ingestion_service.py
 │   ├── test_parsing_service.py
 │   └── test_retrieval_service.py
+├── web/                       # Frontend Web Chat UI (HTML, CSS, JS)
+│   ├── index.html             # Main interface structure
+│   ├── style.css              # Custom styling with glassmorphism & dark theme
+│   └── app.js                 # API handler, event listeners & UI logic
 ├── .env                       # Environment configurations (ignored by git)
 ├── docker-compose.yml         # Docker configuration for MongoDB & Qdrant
 ├── requirements.txt           # Python library dependencies
@@ -147,7 +156,9 @@ Start the Uvicorn development server:
 ```bash
 uvicorn app.main:app --reload
 ```
-Access the interactive API documentation (Swagger UI) at: [http://localhost:8000/docs](http://localhost:8000/docs).
+Once running:
+* Access the interactive API documentation (Swagger UI) at: [http://localhost:8000/docs](http://localhost:8000/docs).
+* Access the **Interactive Web Chat UI** at: [http://localhost:8000/web/index.html](http://localhost:8000/web/index.html) or [http://localhost:8000/web/](http://localhost:8000/web/).
 
 ---
 
