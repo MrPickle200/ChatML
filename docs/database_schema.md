@@ -99,7 +99,7 @@ Một cuộc hội thoại.
 
 ```json
 {
-  "_id": "conv_001",
+  "conversation_id": "conv_001",
   "title": "Backpropagation Discussion",
   "created_at": "2026-06-08T15:00:00Z",
   "updated_at": "2026-06-08T15:00:00Z"
@@ -110,7 +110,7 @@ Một cuộc hội thoại.
 
 | Field | Type |
 |-------|------|
-| _id  | ObjectId |
+| conversation_id  | ObjectId |
 | title | String |
 | created_at | datetime |
 | updated_at | datetime |

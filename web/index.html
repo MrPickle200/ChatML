@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatML - Trợ lý Học tập Machine Learning</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Markdown Parser & Code Highlighter -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Background glow elements -->
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+    <div class="bg-glow bg-glow-3"></div>
+
+    <div class="app-container">
+        <!-- Sidebar or Header Panel -->
+        <header class="app-header">
+            <div class="brand">
+                <button id="toggleSidebarBtn" class="header-btn" title="Đóng/Mở quản lý tài liệu">
+                    <i data-lucide="menu"></i>
+                </button>
+                <div class="logo-container">
+                    <i data-lucide="cpu" class="logo-icon"></i>
+                </div>
+                <div class="brand-info">
+                    <h1>ChatML</h1>
+                    <p>Machine Learning Assistant</p>
+                </div>
+            </div>
+            <div class="status-indicator">
+                <span class="status-dot disconnected" id="statusDot"></span>
+                <span class="status-text" id="statusText">Đang kiểm tra kết nối...</span>
+            </div>
+        </header>
+
+        <!-- Application Body containing Sidebar and Chat -->
+        <div class="app-body">
+            <!-- Left Sidebar for Document Management -->
+            <aside class="sidebar" id="sidebar">
+                <!-- Upload Area -->
+                <div class="sidebar-section">
+                    <h2 class="section-title">
+                        <i data-lucide="upload-cloud"></i>
+                        <span>Tải lên tài liệu</span>
+                    </h2>
+                    <div class="upload-zone" id="uploadZone">
+                        <input type="file" id="fileInput" accept=".pdf,.docx,.txt,.md" style="display: none;" />
+                        <i data-lucide="file-up" class="upload-icon"></i>
+                        <p class="upload-text">Kéo thả tệp vào đây hoặc nhấp để duyệt</p>
+                        <p class="upload-limits">PDF, DOCX, TXT, MD (Tối đa 50MB)</p>
+                    </div>
+                    <!-- Upload status / progress bar -->
+                    <div class="upload-progress-container" id="uploadProgressContainer" style="display: none;">
+                        <div class="upload-file-info">
+                            <i data-lucide="file" class="file-icon"></i>
+                            <span class="upload-filename" id="uploadFilename">tailieu.pdf</span>
+                        </div>
+                        <div class="progress-bar-wrapper">
+                            <div class="progress-bar" id="progressBar"></div>
+                        </div>
+                        <div class="upload-status-text" id="uploadStatusText">Đang tải lên...</div>
+                    </div>
+                </div>
+                
+                <!-- Document List Area -->
+                <div class="sidebar-section list-section">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <i data-lucide="folder-open"></i>
+                            <span>Cơ sở tri thức</span>
+                        </h2>
+                        <span class="doc-count-badge" id="docCount">0</span>
+                    </div>
+                    <div class="document-list" id="documentList">
+                        <!-- Dynamic Document Items will be rendered here -->
+                        <div class="empty-docs">
+                            <i data-lucide="inbox"></i>
+                            <p>Chưa có tài liệu nào được tải lên</p>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main Chat Window -->
+            <main class="chat-window">
+                <div class="messages-container" id="messagesContainer">
+                    <!-- Welcome Message -->
+                    <div class="message system-msg">
+                        <div class="message-avatar">
+                            <i data-lucide="bot"></i>
+                        </div>
+                        <div class="message-content-wrapper">
+                            <div class="message-sender">ChatML Bot</div>
+                            <div class="message-content">
+                                <p>Xin chào! Tôi là <strong>ChatML</strong>, trợ lý học tập Machine Learning của bạn. Hãy tải tài liệu của bạn lên ở thanh bên trái để tôi phân tích, sau đó đặt câu hỏi cho tôi về bất kỳ tài liệu nào nhé!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Input area -->
+                <footer class="input-panel">
+                    <div class="input-container">
+                        <textarea 
+                            id="chatInput" 
+                            placeholder="Hỏi tôi bất cứ điều gì về Machine Learning... (Enter để gửi, Shift+Enter xuống dòng)" 
+                            rows="1"
+                        ></textarea>
+                        <button id="sendBtn" title="Gửi tin nhắn">
+                            <i data-lucide="send"></i>
+                        </button>
+                    </div>
+                </footer>
+            </main>
+        </div>
+    </div>
+
+    <!-- Custom JS -->
+    <script src="app.js"></script>
+</body>
+</html>
