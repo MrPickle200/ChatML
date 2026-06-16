@@ -37,7 +37,7 @@ class DocumentService:
 
 
     def _build_metadata(self, document_id: str, file: UploadFile, path: Path) -> dict:
-        now = datetime.now(timezone.utc)
+        now = str(datetime.now(timezone.utc))
         return {
             "_id": document_id,
             "dataset_id": None,
@@ -62,7 +62,7 @@ class DocumentService:
             "file_size_byte": path.stat().st_size,
             "version": current_doc["version"] + 1,
             "status": "updated",
-            "updated_at": datetime.now(timezone.utc),
+            "updated_at": str(datetime.now(timezone.utc)),
             "storage": {
                 "provider": "local",
                 "uri": str(path)

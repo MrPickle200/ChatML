@@ -99,10 +99,11 @@ Một cuộc hội thoại.
 
 ```json
 {
-  "conversation_id": "conv_001",
+  "_id": "conv_001",
   "title": "Backpropagation Discussion",
   "created_at": "2026-06-08T15:00:00Z",
-  "updated_at": "2026-06-08T15:00:00Z"
+  "updated_at": "2026-06-08T15:00:00Z",
+  "is_conversation": 1
 }
 ```
 
@@ -110,10 +111,11 @@ Một cuộc hội thoại.
 
 | Field | Type |
 |-------|------|
-| conversation_id  | ObjectId |
+| _id  | str |
 | title | String |
 | created_at | datetime |
 | updated_at | datetime |
+| is_conversation | int |
 
 
 ---
@@ -131,7 +133,8 @@ Tin nhắn trong hội thoại.
   "role": "user",
   "content": "What is backpropagation?",
   "sources": ["lecture1.pdf", "lecture2.pdf"],
-  "created_at": "2026-06-08T15:01:00Z"
+  "created_at": "2026-06-08T15:01:00Z",
+  "is_conversation": 0
 }
 ```
 
@@ -139,12 +142,13 @@ Tin nhắn trong hội thoại.
 
 | Field | Type |
 |---------|---------|
-| _id | ObjectId |
-| conversation_id | ObjectId |
+| _id | str |
+| conversation_id | str |
 | role | string |
 | content | string |
 | sources | list[string] |
 | created_at | datetime |
+| is_conversation | int |
 
 ---
 
