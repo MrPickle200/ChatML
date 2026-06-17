@@ -53,47 +53,79 @@
 
         <!-- Application Body containing Sidebar and Chat -->
         <div class="app-body">
-            <!-- Left Sidebar for Document Management -->
+            <!-- Left Sidebar for Document Management & Conversation History -->
             <aside class="sidebar" id="sidebar">
-                <!-- Upload Area -->
-                <div class="sidebar-section">
-                    <h2 class="section-title">
-                        <i data-lucide="upload-cloud"></i>
-                        <span>Tải lên tài liệu</span>
-                    </h2>
-                    <div class="upload-zone" id="uploadZone">
-                        <input type="file" id="fileInput" accept=".pdf,.docx,.txt,.md" style="display: none;" />
-                        <i data-lucide="file-up" class="upload-icon"></i>
-                        <p class="upload-text">Kéo thả tệp vào đây hoặc nhấp để duyệt</p>
-                        <p class="upload-limits">PDF, DOCX, TXT, MD (Tối đa 50MB)</p>
-                    </div>
-                    <!-- Upload status / progress bar -->
-                    <div class="upload-progress-container" id="uploadProgressContainer" style="display: none;">
-                        <div class="upload-file-info">
-                            <i data-lucide="file" class="file-icon"></i>
-                            <span class="upload-filename" id="uploadFilename">tailieu.pdf</span>
+                <!-- Sidebar Tabs Selector -->
+                <div class="sidebar-tabs">
+                    <button class="tab-btn active" id="conversationsTabBtn" title="Hội thoại">
+                        <i data-lucide="message-square"></i>
+                        <span>Hội thoại</span>
+                    </button>
+                    <button class="tab-btn" id="documentsTabBtn" title="Tài liệu & Tri thức">
+                        <i data-lucide="folder-open"></i>
+                        <span>Tài liệu</span>
+                    </button>
+                </div>
+
+                <!-- Tab Content: Conversations -->
+                <div class="tab-content flex-content" id="conversationsTabContent">
+                    <button class="new-chat-btn" id="newChatBtn" title="Bắt đầu cuộc trò chuyện mới">
+                        <i data-lucide="plus"></i>
+                        <span>Cuộc trò chuyện mới</span>
+                    </button>
+                    <div class="conversation-list-container">
+                        <div class="conversation-list" id="conversationList">
+                            <!-- Dynamic Conversation Items will be rendered here -->
+                            <div class="empty-conversations">
+                                <i data-lucide="message-square-dashed"></i>
+                                <p>Chưa có cuộc trò chuyện nào.<br>Bấm nút trên để tạo mới!</p>
+                            </div>
                         </div>
-                        <div class="progress-bar-wrapper">
-                            <div class="progress-bar" id="progressBar"></div>
-                        </div>
-                        <div class="upload-status-text" id="uploadStatusText">Đang tải lên...</div>
                     </div>
                 </div>
-                
-                <!-- Document List Area -->
-                <div class="sidebar-section list-section">
-                    <div class="section-header">
+
+                <!-- Tab Content: Documents -->
+                <div class="tab-content hidden flex-content" id="documentsTabContent">
+                    <!-- Upload Area -->
+                    <div class="sidebar-section">
                         <h2 class="section-title">
-                            <i data-lucide="folder-open"></i>
-                            <span>Cơ sở tri thức</span>
+                            <i data-lucide="upload-cloud"></i>
+                            <span>Tải lên tài liệu</span>
                         </h2>
-                        <span class="doc-count-badge" id="docCount">0</span>
+                        <div class="upload-zone" id="uploadZone">
+                            <input type="file" id="fileInput" accept=".pdf,.docx,.txt,.md" style="display: none;" />
+                            <i data-lucide="file-up" class="upload-icon"></i>
+                            <p class="upload-text">Kéo thả tệp vào đây hoặc nhấp để duyệt</p>
+                            <p class="upload-limits">PDF, DOCX, TXT, MD (Tối đa 50MB)</p>
+                        </div>
+                        <!-- Upload status / progress bar -->
+                        <div class="upload-progress-container" id="uploadProgressContainer" style="display: none;">
+                            <div class="upload-file-info">
+                                <i data-lucide="file" class="file-icon"></i>
+                                <span class="upload-filename" id="uploadFilename">tailieu.pdf</span>
+                            </div>
+                            <div class="progress-bar-wrapper">
+                                <div class="progress-bar" id="progressBar"></div>
+                            </div>
+                            <div class="upload-status-text" id="uploadStatusText">Đang tải lên...</div>
+                        </div>
                     </div>
-                    <div class="document-list" id="documentList">
-                        <!-- Dynamic Document Items will be rendered here -->
-                        <div class="empty-docs">
-                            <i data-lucide="inbox"></i>
-                            <p>Chưa có tài liệu nào được tải lên</p>
+                    
+                    <!-- Document List Area -->
+                    <div class="sidebar-section list-section">
+                        <div class="section-header">
+                            <h2 class="section-title">
+                                <i data-lucide="folder-open"></i>
+                                <span>Cơ sở tri thức</span>
+                            </h2>
+                            <span class="doc-count-badge" id="docCount">0</span>
+                        </div>
+                        <div class="document-list" id="documentList">
+                            <!-- Dynamic Document Items will be rendered here -->
+                            <div class="empty-docs">
+                                <i data-lucide="inbox"></i>
+                                <p>Chưa có tài liệu nào được tải lên</p>
+                            </div>
                         </div>
                     </div>
                 </div>

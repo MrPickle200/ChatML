@@ -21,7 +21,16 @@ class ChatService:
         self.llm_service = llm_service
         self.prompt = prompt
 
-    def _build_source(self, retrieval_results: list[RetrievedChunk]) -> list[Source]:
+    def _build_source(self, retrieval_results: list[RetrievedChunk], save_into_db = False) -> list[Source] | list[dict]:
+        if save_into_db:
+            return [
+                {
+                    "dataset_id" : chunk.dataset_id, 
+                    "document_id" : chunk.document_id,
+                    "chunk_id" : chunk.chunk_id,
+                } for chunk in retrieval_results
+            ]
+
         return [
             Source(
                 dataset_id= chunk.dataset_id, 
@@ -88,16 +97,20 @@ class ChatService:
             await self.create_conversation(conversation_id)
 
         user_message_metadata = self._build_message_metadata(conversation_id, "user", question)
-        bot_message_metadata = self._build_message_metadata(conversation_id, "bot", answer, sources)
+        sources_to_save = self._build_source(retrieval_results, save_into_db= True)
+        bot_message_metadata = self._build_message_metadata(conversation_id, "bot", answer, sources_to_save)
         await self.conversation_service.add_message(user_message_metadata)
         await self.conversation_service.add_message(bot_message_metadata)
 
         return ChatResponse(
             answer= answer,
-            sources= sources
+            sources= sources,
+            conversation_id= conversation_id
         ) 
     
-    # TODO: fix build source, chat API
+    # TODO: add model to make conversation's name
+    async def delete_conversation(self, conversation_id: str):
+        return await self.conversation_service.delete_conversation(conversation_id)
     
 
         

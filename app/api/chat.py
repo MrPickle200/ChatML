@@ -51,3 +51,7 @@ async def list_conversation(chat_service: ChatService = Depends(get_chat_service
 @router.get("/get_conversation/{conversation_id}")
 async def get_history_message(conversation_id : str, chat_service : ChatService = Depends(get_chat_service)):
     return await chat_service.get_history_message(conversation_id)
+
+@router.delete("/delete_conversation/{conversation_id}")
+async def delete_conversation(conversation_id : str, chat_service : ChatService = Depends(get_chat_service)):
+    return await chat_service.delete_conversation(conversation_id)

@@ -19,12 +19,18 @@ class ConversationService:
 
     async def get_history_message(self, conversation_id: str):
         try: 
-            await self.repo.get_conversation(conversation_id)
+            return await self.repo.get_history_message(conversation_id)
         except Exception as e:
             raise HTTPException(status_code= 500, detail= str(e))
         
     async def list_conversation(self):
         try:
             return await self.repo.list_conversations()
+        except Exception as e:
+            raise HTTPException(status_code= 500, detail= str(e))
+
+    async def delete_conversation(self, conversation_id: str):
+        try:
+            return await self.repo.delete_conversation(conversation_id)
         except Exception as e:
             raise HTTPException(status_code= 500, detail= str(e))

@@ -8,8 +8,7 @@ from app.prompts.blank import BlankPrompt
 from app.prompts.simple import SimplePrompt
 
 def test_chat_service_build_source():
-    # Setup service with dummy inputs (None) since _build_source doesn't use them
-    service = ChatService(None, None, None)
+    service = ChatService(None, None, None, None)
     
     retrieval_results = [
         RetrievedChunk(
@@ -65,8 +64,13 @@ def test_chat_service_generate_success_with_results():
     mock_prompt = MagicMock()
     mock_prompt.generate_prompt.return_value = "Mocked full prompt text"
     
+    mock_conversation_service = MagicMock()
+    mock_conversation_service.add_message = AsyncMock()
+    mock_conversation_service.create_conversation = AsyncMock()
+    
     service = ChatService(
         retrieval_service=mock_retrieval_service,
+        conversation_service=mock_conversation_service,
         llm_service=mock_llm_service,
         prompt=mock_prompt
     )
@@ -105,8 +109,13 @@ def test_chat_service_generate_empty_results():
     # We start with a SimplePrompt (or any mock prompt)
     initial_prompt = SimplePrompt()
     
+    mock_conversation_service = MagicMock()
+    mock_conversation_service.add_message = AsyncMock()
+    mock_conversation_service.create_conversation = AsyncMock()
+    
     service = ChatService(
         retrieval_service=mock_retrieval_service,
+        conversation_service=mock_conversation_service,
         llm_service=mock_llm_service,
         prompt=initial_prompt
     )

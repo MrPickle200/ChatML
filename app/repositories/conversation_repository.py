@@ -12,6 +12,11 @@ class ConversationRepository:
         projection = {"_id": 1, "title": 1, "created_at": 1, "updated_at": 1}
         cursor = self.collection.find({"_id" : conversation_id, "is_conversation" : 1}, projection)
         return await cursor.to_list(length=None)        
+    
+    async def get_history_message(self, conversation_id: str):
+        projection = {"msg_id": 1, "role": 1, "content": 1, "sources": 1, "created_at" : 1}
+        cursor = self.collection.find({"conversation_id" : conversation_id, "is_conversation" : 0}, projection)
+        return await cursor.to_list(length=None)        
 
     async def list_conversations(self):
         projection = {"_id": 1, "title": 1, "created_at": 1, "updated_at": 1}

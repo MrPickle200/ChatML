@@ -91,7 +91,7 @@ def test_api_retrieval():
         )
     ])
     
-    response = client.get("/document/retrieval?query=test")
+    response = client.post("/document/retrieval?query=test&threshold=0")
     
     assert response.status_code == 200
     assert response.json() == [
@@ -103,7 +103,7 @@ def test_api_retrieval():
             "score": 0.9
         }
     ]
-    mock_ret_service.search.assert_called_once_with("test", threshold=0)
+    mock_ret_service.search.assert_called_once_with("test", None, 5, 0.0)
 
 # Stop patchers when the module finishes (not strictly necessary but clean)
 patcher_st.stop()

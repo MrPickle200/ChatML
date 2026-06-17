@@ -22,6 +22,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const documentList = document.getElementById('documentList');
     const docCount = document.getElementById('docCount');
 
+    // Tabs & Conversations DOM Selectors
+    const conversationsTabBtn = document.getElementById('conversationsTabBtn');
+    const documentsTabBtn = document.getElementById('documentsTabBtn');
+    const conversationsTabContent = document.getElementById('conversationsTabContent');
+    const documentsTabContent = document.getElementById('documentsTabContent');
+    const newChatBtn = document.getElementById('newChatBtn');
+    const conversationList = document.getElementById('conversationList');
+
+    let currentConversationId = null;
+
     // Initialize Lucide Icons
     lucide.createIcons();
 
@@ -35,6 +45,51 @@ document.addEventListener('DOMContentLoaded', () => {
     toggleSidebarBtn.addEventListener('click', () => {
         sidebar.classList.toggle('collapsed');
     });
+
+    // Tab switching logic
+    conversationsTabBtn.addEventListener('click', () => {
+        conversationsTabBtn.classList.add('active');
+        documentsTabBtn.classList.remove('active');
+        conversationsTabContent.classList.remove('hidden');
+        documentsTabContent.classList.add('hidden');
+    });
+
+    documentsTabBtn.addEventListener('click', () => {
+        documentsTabBtn.classList.add('active');
+        conversationsTabBtn.classList.remove('active');
+        documentsTabContent.classList.remove('hidden');
+        conversationsTabContent.classList.add('hidden');
+    });
+
+    // New Chat logic
+    newChatBtn.addEventListener('click', () => {
+        currentConversationId = null;
+        
+        // Remove active class from all conversation items
+        document.querySelectorAll('.conversation-item').forEach(item => {
+            item.classList.remove('active');
+        });
+
+        // Reset chat window to welcome message
+        resetChatWindow();
+    });
+
+    function resetChatWindow() {
+        messagesContainer.innerHTML = `
+            <div class="message system-msg">
+                <div class="message-avatar">
+                    <i data-lucide="bot"></i>
+                </div>
+                <div class="message-content-wrapper">
+                    <div class="message-sender">ChatML Bot</div>
+                    <div class="message-content">
+                        <p>Xin chào! Tôi là <strong>ChatML</strong>, trợ lý học tập Machine Learning của bạn. Hãy tải tài liệu của bạn lên ở thanh bên trái để tôi phân tích, sau đó đặt câu hỏi cho tôi về bất kỳ tài liệu nào nhé!</p>
+                    </div>
+                </div>
+            </div>
+        `;
+        lucide.createIcons();
+    }
 
     // Check Backend Server Status
     async function checkServerStatus() {
@@ -52,9 +107,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     statusText.textContent = 'Đang trực tuyến';
                     isServerOnline = true;
                     
-                    // Fetch documents if server just came online
+                    // Fetch documents and conversations if server just came online
                     if (wasOffline) {
                         fetchDocuments();
+                        fetchConversations();
                     }
                     return true;
                 }
@@ -146,6 +202,232 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             `;
             lucide.createIcons();
+        }
+    }
+
+    // Fetch and display conversations
+    async function fetchConversations() {
+        if (!isServerOnline) return;
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/chat/list-conversation`);
+            if (!response.ok) throw new Error('Failed to load conversations');
+
+            const conversations = await response.json();
+            
+            if (conversations.length === 0) {
+                conversationList.innerHTML = `
+                    <div class="empty-conversations">
+                        <i data-lucide="message-square-dashed"></i>
+                        <p>Chưa có cuộc trò chuyện nào.<br>Bấm nút trên để tạo mới!</p>
+                    </div>
+                `;
+                lucide.createIcons();
+                return;
+            }
+
+            // Sắp xếp conversations theo thời gian updated_at (hoặc created_at) mới nhất lên đầu
+            conversations.sort((a, b) => new Date(b.updated_at || b.created_at) - new Date(a.updated_at || a.created_at));
+
+            // Render Conversation items
+            conversationList.innerHTML = conversations.map(conv => {
+                const convId = conv._id;
+                const isActive = convId === currentConversationId ? 'active' : '';
+                
+                // Định dạng thời gian
+                const dateObj = new Date(conv.updated_at || conv.created_at);
+                const timeStr = dateObj.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+                const dateStr = dateObj.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' });
+                const displayTime = `${timeStr} ${dateStr}`;
+
+                // Rút ngắn tên cuộc trò chuyện
+                let title = conv.title || 'Cuộc trò chuyện mới';
+                if (title === 'new conversation') {
+                    title = `Cuộc trò chuyện #${convId.substring(0, 6)}`;
+                }
+
+                return `
+                    <div class="conversation-item ${isActive}" id="conv-item-${convId}" data-id="${convId}">
+                        <div class="conv-info">
+                            <i data-lucide="message-square" class="conv-icon"></i>
+                            <div class="conv-details">
+                                <span class="conv-title" title="${escapeHtml(title)}">${escapeHtml(title)}</span>
+                                <span class="conv-meta">${displayTime}</span>
+                            </div>
+                        </div>
+                        <button class="conv-action-btn delete-conv-btn" data-id="${convId}" title="Xóa hội thoại" onclick="event.stopPropagation();">
+                            <i data-lucide="trash-2"></i>
+                        </button>
+                    </div>
+                `;
+            }).join('');
+
+            // Thêm sự kiện click cho từng conversation item
+            document.querySelectorAll('.conversation-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const id = item.getAttribute('data-id');
+                    handleSelectConversation(id);
+                });
+            });
+
+            // Thêm sự kiện click cho nút xóa conversation
+            document.querySelectorAll('.delete-conv-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation(); // Ngăn sự kiện click lan truyền lên parent item
+                    const id = btn.getAttribute('data-id');
+                    handleDeleteConversation(id);
+                });
+            });
+
+            lucide.createIcons();
+        } catch (error) {
+            console.error('Error fetching conversations:', error);
+            conversationList.innerHTML = `
+                <div class="empty-conversations" style="color: #ef4444;">
+                    <i data-lucide="alert-triangle"></i>
+                    <p>Lỗi tải danh sách hội thoại</p>
+                </div>
+            `;
+            lucide.createIcons();
+        }
+    }
+
+    // Select Conversation Action
+    async function handleSelectConversation(conversationId) {
+        if (conversationId === currentConversationId) return;
+
+        // Set active class
+        document.querySelectorAll('.conversation-item').forEach(item => {
+            if (item.getAttribute('data-id') === conversationId) {
+                item.classList.add('active');
+            } else {
+                item.classList.remove('active');
+            }
+        });
+
+        currentConversationId = conversationId;
+
+        // Hiển thị trạng thái loading trong khung chat
+        messagesContainer.innerHTML = `
+            <div class="empty-docs" style="margin: auto;">
+                <div class="typing-indicator" style="scale: 1.5; padding: 20px;">
+                    <span class="typing-dot"></span>
+                    <span class="typing-dot"></span>
+                    <span class="typing-dot"></span>
+                </div>
+                <p>Đang tải lịch sử hội thoại...</p>
+            </div>
+        `;
+        lucide.createIcons();
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/chat/get_conversation/${conversationId}`);
+            if (!response.ok) throw new Error('Không thể tải lịch sử tin nhắn');
+
+            const messages = await response.json();
+            
+            // Dọn sạch khung chat
+            messagesContainer.innerHTML = '';
+
+            if (messages.length === 0) {
+                resetChatWindow();
+                return;
+            }
+
+            // Sắp xếp tin nhắn theo created_at tăng dần
+            messages.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+
+            // Render từng tin nhắn
+            messages.forEach(msg => {
+                if (msg.role === 'user') {
+                    // Render user message
+                    const messageDiv = document.createElement('div');
+                    messageDiv.className = 'message user-msg';
+                    messageDiv.innerHTML = `
+                        <div class="message-avatar">
+                            <i data-lucide="user"></i>
+                        </div>
+                        <div class="message-content-wrapper">
+                            <div class="message-sender">Bạn</div>
+                            <div class="message-content">
+                                <p>${escapeHtml(msg.content).replace(/\n/g, '<br>')}</p>
+                            </div>
+                        </div>
+                    `;
+                    messagesContainer.appendChild(messageDiv);
+                } else {
+                    // Render bot message
+                    const messageDiv = document.createElement('div');
+                    messageDiv.className = 'message system-msg';
+                    const botMsgId = 'msg-' + (msg.msg_id || Math.random().toString(36).substring(2, 9));
+                    messageDiv.id = botMsgId;
+                    
+                    messageDiv.innerHTML = `
+                        <div class="message-avatar">
+                            <i data-lucide="bot"></i>
+                        </div>
+                        <div class="message-content-wrapper">
+                            <div class="message-sender">ChatML Bot</div>
+                            <div class="message-content">
+                                <!-- Markdown content will be loaded here -->
+                            </div>
+                        </div>
+                    `;
+                    messagesContainer.appendChild(messageDiv);
+                    
+                    // Render content with markdown parsing
+                    renderBotResponse(botMsgId, msg.content, msg.sources);
+                }
+            });
+
+            scrollToBottom();
+        } catch (error) {
+            console.error('Error loading conversation:', error);
+            messagesContainer.innerHTML = `
+                <div class="empty-docs" style="margin: auto; color: #ef4444;">
+                    <i data-lucide="alert-triangle"></i>
+                    <p>Lỗi: ${error.message}</p>
+                    <button class="new-chat-btn" style="margin-top: 10px;" id="retryLoadConvBtn">Thử lại</button>
+                </div>
+            `;
+            document.getElementById('retryLoadConvBtn')?.addEventListener('click', () => handleSelectConversation(conversationId));
+            lucide.createIcons();
+        }
+    }
+
+    // Delete Conversation Action
+    async function handleDeleteConversation(conversationId) {
+        if (!confirm('Bạn có chắc chắn muốn xóa cuộc trò chuyện này? Lịch sử tin nhắn sẽ bị xóa vĩnh viễn.')) {
+            return;
+        }
+
+        const convItem = document.getElementById(`conv-item-${conversationId}`);
+        if (convItem) {
+            convItem.style.opacity = '0.5';
+            convItem.style.pointerEvents = 'none';
+        }
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/chat/delete_conversation/${conversationId}`, {
+                method: 'DELETE'
+            });
+
+            if (!response.ok) throw new Error('Không thể xóa cuộc trò chuyện');
+
+            // Nếu đang xem cuộc trò chuyện bị xóa, dọn dẹp và reset chat window
+            if (conversationId === currentConversationId) {
+                currentConversationId = null;
+                resetChatWindow();
+            }
+
+            // Tải lại danh sách
+            fetchConversations();
+        } catch (error) {
+            alert(`Lỗi: ${error.message}`);
+            if (convItem) {
+                convItem.style.opacity = '1';
+                convItem.style.pointerEvents = 'auto';
+            }
         }
     }
 
@@ -330,6 +612,9 @@ document.addEventListener('DOMContentLoaded', () => {
             // 3. Make POST request to Chat API
             const chatUrl = new URL(`${API_BASE_URL}/chat/chat`);
             chatUrl.searchParams.append('question', query);
+            if (currentConversationId) {
+                chatUrl.searchParams.append('conversation_id', currentConversationId);
+            }
 
             const response = await fetch(chatUrl, {
                 method: 'POST',
@@ -347,6 +632,13 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // 4. Update loading bubble with real response
             renderBotResponse(botMessageId, data.answer, data.sources);
+
+            // 5. Update currentConversationId if we started a new one
+            if (!currentConversationId && data.conversation_id) {
+                currentConversationId = data.conversation_id;
+            }
+            // Always refresh conversation list to show newly created chat or update timestamps
+            fetchConversations();
         } catch (error) {
             console.error('Chat Error:', error);
             renderBotError(botMessageId, error.message);

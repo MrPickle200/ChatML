@@ -23,7 +23,7 @@ def test_retrieval_search_success():
     service = RetrievalService(mock_embedding, mock_qdrant)
 
     async def run_test():
-        results = await service.search("hello query", dataset_id="ds1", top_k=3, threshold=0.6)
+        results = await service.search("hello query", dataset_ids="ds1", top_k=3, threshold=0.6)
         
         mock_embedding.embed_text.assert_called_once_with("hello query")
         mock_qdrant.search.assert_called_once_with([0.1, 0.2, 0.3], 3, "ds1", 0.6)
