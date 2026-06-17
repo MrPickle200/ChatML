@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // API Configurations
     const API_BASE_URL = 'http://localhost:8000';
     let isServerOnline = false;
+    const documentNameCache = {};
     
     // DOM Selectors
     const chatInput = document.getElementById('chatInput');
@@ -138,6 +139,13 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const data = await response.json();
             const docs = data.list_document || [];
+            
+            // Cache document names by ID
+            docs.forEach(doc => {
+                if (doc._id && doc.filename) {
+                    documentNameCache[doc._id] = doc.filename;
+                }
+            });
             
             // Update document counter badge
             docCount.textContent = docs.length;
@@ -671,6 +679,33 @@ document.addEventListener('DOMContentLoaded', () => {
         return filePath.split(/[/\\]/).pop();
     }
 
+    // Helper: Get document name asynchronously, utilizing cache
+    async function getDocumentName(documentId) {
+        if (!documentId) return 'Tài liệu';
+        // If it's already cached, return it
+        if (documentNameCache[documentId]) {
+            return documentNameCache[documentId];
+        }
+        
+        // Fetch from API
+        try {
+            const response = await fetch(`${API_BASE_URL}/document/get-document/${documentId}`);
+            if (response.ok) {
+                const data = await response.json();
+                if (data.status === 'ok' && data.metadata && data.metadata.filename) {
+                    const filename = data.metadata.filename;
+                    documentNameCache[documentId] = filename;
+                    return filename;
+                }
+            }
+        } catch (error) {
+            console.error(`Error fetching document name for ID ${documentId}:`, error);
+        }
+        
+        // If not found or error, fallback to clean name from file path if it looks like one, or the ID
+        return getFileName(documentId);
+    }
+
     // Helper: Format Bytes to human readable
     function formatBytes(bytes, decimals = 1) {
         if (bytes === 0) return '0 B';
@@ -749,13 +784,17 @@ document.addEventListener('DOMContentLoaded', () => {
             const seenDocs = new Set();
             
             sources.forEach(src => {
-                const docName = getFileName(src.document_id);
-                const key = `${docName}-${src.chunk_id}`;
+                const docId = src.document_id;
+                const chunkId = src.chunk_id;
+                const key = `${docId}-${chunkId}`;
                 if (!seenDocs.has(key)) {
                     seenDocs.add(key);
+                    // Use cached name if exists, otherwise fallback to document ID
+                    const initialName = documentNameCache[docId] || getFileName(docId);
                     uniqueSources.push({
-                        name: docName,
-                        chunk: src.chunk_id
+                        documentId: docId,
+                        name: initialName,
+                        chunk: chunkId
                     });
                 }
             });
@@ -768,14 +807,27 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                     <div class="sources-list">
                         ${uniqueSources.map(src => `
-                            <span class="source-badge" title="Mã đoạn: ${src.chunk}">
+                            <span class="source-badge" data-doc-id="${escapeHtml(src.documentId)}" title="Mã đoạn: ${src.chunk}">
                                 <i data-lucide="file-text"></i>
-                                ${src.name}
+                                <span class="badge-text">${escapeHtml(src.name)}</span>
                             </span>
                         `).join('')}
                     </div>
                 `;
                 contentDiv.appendChild(sourcesPanel);
+
+                // Fetch document names asynchronously if not already in cache
+                const badges = sourcesPanel.querySelectorAll('.source-badge');
+                badges.forEach(async badge => {
+                    const docId = badge.getAttribute('data-doc-id');
+                    if (docId) {
+                        const resolvedName = await getDocumentName(docId);
+                        const textEl = badge.querySelector('.badge-text');
+                        if (textEl) {
+                            textEl.textContent = resolvedName;
+                        }
+                    }
+                });
             }
         }
 

@@ -9,12 +9,14 @@ from app.database.qdrant import client as qdrant_client
 from app.database.mongodb import conversation_collection as conversation_client
 from app.repositories.qdrant_repository import QdrantRepository
 from app.repositories.conversation_repository import ConversationRepository
+from app.services.context_builder_service import ContextBuilderService
 
 router = APIRouter(prefix="/chat")
 embedding_service = EmbeddingService()
 gemini_service = GeminiService()
 conversation_repo = ConversationRepository(conversation_client)
 conversation_service = ConversationService(conversation_repo)
+context_builder_service = ContextBuilderService(conversation_repo, gemini_service)
 
 async def get_chat_service() -> ChatService:
     qdrant_repo =  QdrantRepository(qdrant_client)
@@ -25,10 +27,11 @@ async def get_chat_service() -> ChatService:
     )
 
     return ChatService(
-        retrieval_service,
-        conversation_service,
-        gemini_service,
-        SimplePrompt()
+        retrieval_service= retrieval_service,
+        conversation_service= conversation_service,
+        llm_service = gemini_service,
+        prompt = SimplePrompt(),
+        context_builder_service= context_builder_service
     )
 
 @router.post("/chat")

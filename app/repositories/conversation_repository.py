@@ -31,4 +31,5 @@ class ConversationRepository:
         await self.collection.update_one({"_id" : conversation_id, "is_conversation" : 1}, {"$set" : to_update})
 
     async def delete_conversation(self, conversation_id: str):
-        await self.collection.delete_many({"_id" : conversation_id})
+        await self.collection.delete_one({"_id" : conversation_id, "is_conversation" : 1})
+        await self.collection.delete_many({"conversation_id" : conversation_id, "is_conversation" : 0})
