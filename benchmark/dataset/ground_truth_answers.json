@@ -1,0 +1,402 @@
+[
+  {
+    "question_id": "q_001",
+    "ground_truth_answer": "Regular practice with complex debugging, code review of AI output, and architecture discussions are essential to growing as an engineer and staying sharp, particularly when working with AI."
+  },
+  {
+    "question_id": "q_002",
+    "ground_truth_answer": "A developer typically builds an agent from a terminal, often using natural language, and often with another coding agent doing the typing. The new aspect of this process is that it has become common for another coding agent to do the typing, which is a recent development that has emerged within the past year."
+  },
+  {
+    "question_id": "q_003",
+    "ground_truth_answer": "Agent Skills solve four problems that have plagued AI agent development: context rot from overloaded prompts, absence of procedural memory for LLMs, and two other unspecified problems."
+  },
+  {
+    "question_id": "q_004",
+    "ground_truth_answer": "The stages involved in the SDLC are: 1. Requirements, Planning, & Architecture (Configuring the Harness), 2. Implementation (Running the Harness), 3. Testing & QA (The Feedback Loop), and 4. Code Review, Deployment, & Maintenance (Observing the Harness)."
+  },
+  {
+    "question_id": "q_005",
+    "ground_truth_answer": "Every agent is built from five parts, with a key component being the model, which serves as the reasoning engine. The model reads the current context, decides what should happen next, and produces the next thought, the next tool call, or the next message, as part of the agent loop that involves perceiving, planning, acting, observing, and iterating."
+  },
+  {
+    "question_id": "q_006",
+    "ground_truth_answer": "The transformation is expected to reshape not just how software is built, but what kind of software is possible to build. Smaller teams will be able to tackle larger problems, and individual developers will be able to build and maintain systems that previously required entire departments, as the barrier to creating software continues to fall."
+  },
+  {
+    "question_id": "q_007",
+    "ground_truth_answer": "Teams that keep this distinction blurry produce prototypes that ship by accident."
+  },
+  {
+    "question_id": "q_008",
+    "ground_truth_answer": "The human role is evolving, not diminishing, with a shift in skills from implementation to judgment, and from writing code to designing systems, including understanding architecture, defining precise specifications, evaluating output critically, and designing effective systems of constraints and feedback loops."
+  },
+  {
+    "question_id": "q_009",
+    "ground_truth_answer": "Both are necessary because a fluent output that skipped its verification steps is a more dangerous failure than one with a visible error."
+  },
+  {
+    "question_id": "q_010",
+    "ground_truth_answer": "The initial cost of vibe coding appears to be extremely low, with a barrier to entry of essentially zero, requiring only a standard monthly subscription to an AI assistant and a few casual prompts, resulting in negligible Capital Expenditure (CapEx) since the developer relies on the model's baseline capabilities. However, the hidden cost, or Operational Expenditure (OpEx), is substantial and compounding, primarily due to the Token Burn Rate, which is incurred with every interaction with a Large Language Model (LLM)."
+  },
+  {
+    "question_id": "q_011",
+    "ground_truth_answer": "Developers effectively navigate the challenges associated with AI-powered development by focusing their expertise where it matters most and applying the right tool to the right phase of work. In this process, they operate as a 'Conductor', indicating a need for a specific set of tools tailored to their role."
+  },
+  {
+    "question_id": "q_012",
+    "ground_truth_answer": "Using AI to review code before a human reviewer sees it can identify potential bugs, style violations, security vulnerabilities, and performance issues, significantly reducing the cognitive burden on reviewers. However, context-dependent decisions about design, maintainability, and strategic alignment still require human judgment."
+  },
+  {
+    "question_id": "q_013",
+    "ground_truth_answer": "The transition from writing code to expressing intent, and trusting intelligent systems to translate that intent into working software."
+  },
+  {
+    "question_id": "q_014",
+    "ground_truth_answer": "The introduction of AI has made deployment a continuous process rather than a quarterly event, dramatically compressing the cycle, but unevenly so. While implementation can now be done in hours, other phases such as requirements, architecture, and verification remain human-paced, resulting in a different workflow with blurred boundaries between phases and shortened iteration cycles."
+  },
+  {
+    "question_id": "q_015",
+    "ground_truth_answer": "The 80% problem refers to the challenge where AI agents can quickly generate about 80% of the code for a feature, but struggle with the remaining 20%, which includes edge cases, error handling, integration points, and subtle correctness requirements."
+  },
+  {
+    "question_id": "q_016",
+    "ground_truth_answer": "The four main parts that work together in a continuous loop are: (1) getting the mission, (2) scanning the scene, (3) thinking (which involves orchestration, the code that runs the loop, assembles context, dispatches tool calls, and captures results), and (4) deployment (which turns the prototype into a service, including hosting, identity, observability, and production infrastructure)."
+  },
+  {
+    "question_id": "q_017",
+    "ground_truth_answer": "The two roles are the conductor, which involves hands-on, real-time direction, and the orchestrator, which involves async, multi-agent delegation."
+  },
+  {
+    "question_id": "q_018",
+    "ground_truth_answer": "AI agents can monitor deployment health, automatically roll back problematic releases, and predict deployment risks based on the nature and scope of changes."
+  },
+  {
+    "question_id": "q_019",
+    "ground_truth_answer": "The primary change is that developers now express what they want to build, rather than how to build it, with the machine handling the implementation, while the human provides intent, architecture, and judgment."
+  },
+  {
+    "question_id": "q_020",
+    "ground_truth_answer": "There are several online resources that discuss Agentic Engineering and AI-Native SDLC, including the Glide Blog, The New Stack, CircleCI, GroovyWeb, and EPAM, which provide information on these topics through their blog posts and articles."
+  },
+  {
+    "question_id": "q_021",
+    "ground_truth_answer": "The orchestrator mode requires strong skills in three areas: Specification, which involves defining tasks precisely enough that an agent can execute them without ambiguity; Decomposition, which involves breaking large tasks into appropriately sized units for agent execution; and Evaluation, which involves quickly assessing whether agent output meets quality standards."
+  },
+  {
+    "question_id": "q_022",
+    "ground_truth_answer": "The components that contribute to the overall functionality of a running agent, aside from the model, include the prompts, the tools, the context policies, the hooks, the sandboxes, the sub-agents, and the observability, which collectively form the harness or scaffolding that enables the model to produce a useful outcome."
+  },
+  {
+    "question_id": "q_023",
+    "ground_truth_answer": "Verification, judgment, and direction are the new craft in software engineering after the problem of generation is solved."
+  },
+  {
+    "question_id": "q_024",
+    "ground_truth_answer": "Human judgment, taste, and the skill to verify AI"
+  },
+  {
+    "question_id": "q_025",
+    "ground_truth_answer": "AI excels at implementing architectural decisions once they are made. Given a clear architecture document, AI agents can perform tasks such as scaffolding entire applications, generating consistent patterns across modules, and ensuring that new code conforms to established conventions."
+  },
+  {
+    "question_id": "q_026",
+    "ground_truth_answer": "The required properties in the output schema are 'price' and 'date', where 'price' is of type 'number' and 'date' is of type 'string'."
+  },
+  {
+    "question_id": "q_027",
+    "ground_truth_answer": "The inputSchema and outputSchema fields are required and should be clearly descriptive and carefully worded, with each property defined in both schemas having a descriptive name and a clear description. In contrast, the annotations field is declared as optional and should remain that way, containing properties such as destructiveHint, which may perform destructive updates with a default value of true."
+  },
+  {
+    "question_id": "q_028",
+    "ground_truth_answer": "The Gemini Enterprise Agent Platform resolves identity management ambiguity through Agent Identity, which assigns cryptographic, verifiable identities to agents, enabling strict accountability and fine-grained access control."
+  },
+  {
+    "question_id": "q_029",
+    "ground_truth_answer": "MCP tool developers should consider how best to use the messages channel to provide further context to the calling LLM and provide additional guidance to the client LLM, as demonstrated in the provided examples for each error type."
+  },
+  {
+    "question_id": "q_030",
+    "ground_truth_answer": "The primary function of the LlmAgent instance named 'capital_agent' is to return the capital city for any given country or state, based on the user's input, as per the provided instruction."
+  },
+  {
+    "question_id": "q_031",
+    "ground_truth_answer": "Policy enforcement should occur at key points such as before tool discovery, before tool invocation, before data is returned to a client, and before a tool makes an outbound call."
+  },
+  {
+    "question_id": "q_032",
+    "ground_truth_answer": "Sampling gives client developers control over the LLM providers used in their applications and allows costs to be borne by the application developer instead of the service provider. Additionally, it gives the client developer control of any content guardrails."
+  },
+  {
+    "question_id": "q_033",
+    "ground_truth_answer": "External tools act as the agent's 'eyes' and 'hands,' allowing it to perceive and act on the world. With the capacity to take external actions through these tools, agents can have a dramatic impact on enterprise applications, enabling them to interact with users and achieve specific goals for them."
+  },
+  {
+    "question_id": "q_034",
+    "ground_truth_answer": "To prevent a user from tampering with core model behavior, the system can clearly separate user inputs from system instructions. Furthermore, an architecture with two separate planners can be implemented: a trusted planner with access to first-party or authenticated tools, and an untrusted planner with access to third-party tools, with only a restricted communication channel between them."
+  },
+  {
+    "question_id": "q_035",
+    "ground_truth_answer": "The strategy is to insert the large query result into a temporary database table and return the table name, allowing a subsequent tool to retrieve the data directly. This approach avoids returning the large query result directly to the LLM, potentially improving performance and reducing the impact on subsequent requests."
+  },
+  {
+    "question_id": "q_036",
+    "ground_truth_answer": "The recommended approach is to use the principle of least privilege, where a tool should only have the necessary permissions to perform its task, such as 'read-only' access, and avoid using broad credentials for multiple systems. Additionally, permissions granted to agent credentials should be carefully audited to ensure there are no excess privileges."
+  },
+  {
+    "question_id": "q_037",
+    "ground_truth_answer": "Security is a critical topic for MCP, and it can be found in Section 5 of the whitepaper."
+  },
+  {
+    "question_id": "q_038",
+    "ground_truth_answer": "3 November 2025"
+  },
+  {
+    "question_id": "q_039",
+    "ground_truth_answer": "Third-party developers can create specialized MCP servers for any conceivable tool or API, allowing AI agent developers to focus on their core competency—reasoning and user experience."
+  },
+  {
+    "question_id": "q_040",
+    "ground_truth_answer": "There is an active effort underway to update the Authorization specification MCP, and a Pull Request has been made on the MCP GitHub repository to address these issues."
+  },
+  {
+    "question_id": "q_041",
+    "ground_truth_answer": "Resources provided by an MCP server can include the content of a file, a record from a database, a database schema, an image, or another piece of static data. These resources are intended to provide contextual data that can be accessed and used by the Host application, or in other words, the client, and examples of possible Resources include log files and configuration data."
+  },
+  {
+    "question_id": "q_042",
+    "ground_truth_answer": "Introducing arbitrary external content into the LLM's context carries significant security risks. To mitigate these risks, any resource consumed by an LLM client should be validated and retrieved from a trusted URL."
+  },
+  {
+    "question_id": "q_043",
+    "ground_truth_answer": "MCP's decentralized, developer-focused origins mean it does not currently include enterprise-grade features for security, identity management, and observability, creating a new threat landscape, including attacks like Dynamic Capability Injection, Tool Shadowing, and 'confused deputy' vulnerabilities."
+  },
+  {
+    "question_id": "q_044",
+    "ground_truth_answer": "Invoking an agent as a tool prevents a full handoff of the user conversation, allowing the primary agent to maintain control over the interaction and process the sub-conversation."
+  },
+  {
+    "question_id": "q_045",
+    "ground_truth_answer": "When defining the responsibilities of a tool, consider its purpose, when it should be called, any side effects it may have, and what data it will return, and ensure this information is well-documented."
+  },
+  {
+    "question_id": "q_046",
+    "ground_truth_answer": "The definition passed to the model is extracted from the Python docstring in the tool code."
+  },
+  {
+    "question_id": "q_047",
+    "ground_truth_answer": "Most modern foundation models have limitations in that they can't access any new data about the world except what is fed into it in its request context, can't interact with an external system, and can't take any action to influence its environment. These limitations are addressed by the capacity to call external functions, or tools, which enable the AI system to do more than just generate patterns, acting as the agent's 'eyes' and 'hands'."
+  },
+  {
+    "question_id": "q_048",
+    "ground_truth_answer": "The primary purpose of Elicitation is to provide a formal mechanism for a server to pause an operation and interact with the human user via the client's UI, allowing the client to maintain control of the user interaction and data sharing, while giving the server a way to get user input. This enables the MCP tool to dynamically query the host application for additional data to complete a tool request without requiring an LLM call."
+  },
+  {
+    "question_id": "q_049",
+    "ground_truth_answer": "Pablo Arredondo wrote about GPT-4 passing the bar exam, discussing its implications for artificial intelligence tools in the legal profession."
+  },
+  {
+    "question_id": "q_050",
+    "ground_truth_answer": "The example of the MCP Tool definition is provided in JSON format."
+  },
+  {
+    "question_id": "q_051",
+    "ground_truth_answer": "The primary difference is that the collaborative model is currently constrained by the reasoning limitations of today's language models and involves delegation, whereas Level 4 represents a leap to autonomous creation and adaptation, enabling the system to evolve on its own."
+  },
+  {
+    "question_id": "q_052",
+    "ground_truth_answer": "The agent's orchestration layer recognizes the completion of the first part of its plan and proceeds to the second part by calling the get_shipping_status tool with the tracking number 'ZYX987', and then observes the result as 'Out for Delivery'."
+  },
+  {
+    "question_id": "q_053",
+    "ground_truth_answer": "To address capabilities gaps, methods such as gaining access to a new tool, creating a new one on the fly (e.g., a Python script), or modifying an existing tool (e.g., updating an API schema) can be used. Additional optimization techniques being researched include dynamically reconfiguring multi-agent design patterns or using Reinforcement Learning from Human Feedback (RLHF)."
+  },
+  {
+    "question_id": "q_054",
+    "ground_truth_answer": "Model Armor acts as a security layer to protect against a wide range of threats, including prompt injection, jailbreak attempts, sensitive data (PII) leakage, and malicious URLs."
+  },
+  {
+    "question_id": "q_055",
+    "ground_truth_answer": "The interaction patterns involved in Human in the Loop (HITL) include intent refinement, goal expansion, confirmation, and clarification requests."
+  },
+  {
+    "question_id": "q_056",
+    "ground_truth_answer": "Having a unique agent identity construct is critical as it ensures that even if a single agent is compromised or behaves unexpectedly, the potential blast radius is contained, and it allows agents to work on behalf of humans with limited delegated authority. The Agent Identity feature in the Gemini Enterprise Agent Platform enforces this by assigning a unique cryptographic ID to every agent."
+  },
+  {
+    "question_id": "q_057",
+    "ground_truth_answer": "The context may include system instructions, user input, session history, long term memories, grounding knowledge from authoritative sources, what tools could be used, and the results of tools already invoked."
+  },
+  {
+    "question_id": "q_058",
+    "ground_truth_answer": "The agent can generate a SQL query or a Python script to solve a complex problem or perform a calculation, transforming it from a knowledgeable assistant into an autonomous actor."
+  },
+  {
+    "question_id": "q_059",
+    "ground_truth_answer": "To evaluate a model's performance, start by defining the business problem, then test models against metrics that directly map to that outcome. Additionally, test the model in a setting that is relevant to its intended use, such as testing code-writing abilities on a private codebase or evaluating an insurance claims processor's ability to extract information."
+  },
+  {
+    "question_id": "q_060",
+    "ground_truth_answer": "The Agent Registry is a central library that indexes every internal agent, tool, and skill, simplifying discovery and ensuring only approved assets are available, thus contributing to a managed, secure, and efficient ecosystem."
+  },
+  {
+    "question_id": "q_061",
+    "ground_truth_answer": "Generative AI agents shift artificial intelligence from a passive tool for content creation to an active, autonomous partner in problem-solving."
+  },
+  {
+    "question_id": "q_062",
+    "ground_truth_answer": "The two layers of security are: (1) a policy engine that blocks any purchase over $100 or requires explicit user confirmation before interacting with an external API, providing predictable and auditable hard limits on the agent's power; and (2) a layer that leverages reasoning-based defenses using AI, which involves training the model for adversarial training and employing smaller, specialized 'guard models' that act like security analysts to examine and secure the agent's interactions."
+  },
+  {
+    "question_id": "q_063",
+    "ground_truth_answer": "The main topics covered include The Orchestration Layer, Core Design Choices, Instruct with Domain Knowledge and Persona, Augment with Context, Multi-Agent Systems and Design Patterns, Agent Deployment and Services, and Agent Ops, as well as measuring success through instrumenting like an A/B experiment."
+  },
+  {
+    "question_id": "q_064",
+    "ground_truth_answer": "The Querying Agent retrieves raw data in response to a user request, and the Reporting Agent synthesizes this data into a draft report, as part of a multi-agent workflow to generate reports that comply with privacy and regulatory rules."
+  },
+  {
+    "question_id": "q_065",
+    "ground_truth_answer": "The Gemini Enterprise Agent Platform provides dedicated tools like Agent Simulation and Agent Evaluation, which allow teams to automatically score, stress-test, and guarantee quality before launching into production."
+  },
+  {
+    "question_id": "q_066",
+    "ground_truth_answer": "Building guardrails into tools, models, and sub-agents ensures that no matter what the LM reasons or what a malicious prompt might suggest, the tool's own logic will refuse to execute an unsafe or out-of-policy action, providing a predictable and auditable security baseline."
+  },
+  {
+    "question_id": "q_067",
+    "ground_truth_answer": "The system improves its performance by continuously refining its prompts, few-shot examples, and the information it retrieves from memory, thereby optimizing the context for each task. Additionally, the agent's reasoning identifies gaps in its capabilities and acts to fill them by gaining access to new tools or creating them."
+  },
+  {
+    "question_id": "q_068",
+    "ground_truth_answer": "The primary source of strength for a Language Model in its most basic form is its extensive training. It utilizes this strength by explaining established concepts and planning, solely based on its vast pre-trained knowledge, without relying on any tools, memory, or interaction with the live environment."
+  },
+  {
+    "question_id": "q_069",
+    "ground_truth_answer": "An AI agent is a complete application that makes plans and takes actions to achieve goals, whereas a simple AI model in a static workflow lacks this autonomy and ability to execute tasks independently."
+  },
+  {
+    "question_id": "q_070",
+    "ground_truth_answer": "To build evaluation datasets, you should sample scenarios from existing production or development interactions with the agent, covering the full breadth of use cases that you expect your users to engage with, plus a few unexpected ones."
+  },
+  {
+    "question_id": "q_071",
+    "ground_truth_answer": "The final score of the Yankees game last night, because it is a specific, real-world event that happened after its training data was collected."
+  },
+  {
+    "question_id": "q_072",
+    "ground_truth_answer": "The Gemini Enterprise Agent Platform provides technical teams with the capabilities to build, scale, govern, and optimize agents, including the use of Agent Studio for seamless transitions from prompting to deployment and a revamped Agent Runtime for improved performance."
+  },
+  {
+    "question_id": "q_073",
+    "ground_truth_answer": "The new members of teams are collaborative, capable, and adaptable, and a disciplined, architectural approach will be the deciding factor in harnessing the full power of agentic AI as this technology matures."
+  },
+  {
+    "question_id": "q_074",
+    "ground_truth_answer": "An agent can ensure a person is involved in critical decisions by using a Human in the Loop (HITL) tool to pause its workflow and ask for confirmation or request specific information from a user interface. HITL can be implemented via methods such as SMS text messaging and a task in a database."
+  },
+  {
+    "question_id": "q_075",
+    "ground_truth_answer": "In the ConvS2S model, the number of operations required to relate signals from two arbitrary input or output positions grows linearly with the distance between positions, while in the ByteNet model, it grows logarithmically with the distance between positions."
+  },
+  {
+    "question_id": "q_076",
+    "ground_truth_answer": "The primary goal is to evaluate various aspects of self-attention layers for mapping one variable-length sequence of symbol representations to another sequence of equal length, such as in a typical sequence transduction encoder or decoder, by considering three desiderata that motivate the use of self-attention."
+  },
+  {
+    "question_id": "q_077",
+    "ground_truth_answer": "The Transformer model architecture relies entirely on an attention mechanism to draw global dependencies between input and output. This allows for significantly more parallelization and enables the model to reach a new state of the art in translation quality after being trained for as little as twelve hours on eight P100 GPUs."
+  },
+  {
+    "question_id": "q_078",
+    "ground_truth_answer": "The projections in the multi-head attention mechanism are defined by parameter matrices WQ, WK, and WV, where WQ ∈ Rhdv×dmodel, WK ∈ Rdmodel×dk, and WV ∈ Rdmodel×dv. These projections are used to transform the input queries, keys, and values before applying the attention mechanism, allowing the model to attend to information from different representation subspaces at different positions."
+  },
+  {
+    "question_id": "q_079",
+    "ground_truth_answer": "The shorter the paths between any combination of positions in the input and output sequences, the easier it is to learn long-range dependencies."
+  },
+  {
+    "question_id": "q_080",
+    "ground_truth_answer": "The parameters that were adjusted during the experiments include dropout, attention and residual, learning rates, and beam size. All other parameters remained unchanged from the English-to-German base translation model."
+  },
+  {
+    "question_id": "q_081",
+    "ground_truth_answer": "The text does not explicitly provide a range of Training Cost (FLOPs) values for EN-DE and EN-FR. However, it lists specific values: for EN-DE, the values are 2.3 · 10^19, 1.8 · 10^20, 1.0 · 10^20, 1.4 · 10^20, 1.5 · 10^20, 1.2 · 10^20, 8.0 · 10^20, 1.1 · 10^21, 1.2 · 10^21, and 3.3 · 10^18, 2.3 · 10^19; for EN-FR, the values are 9.6 · 10^18, 7.7 · 10^19."
+  },
+  {
+    "question_id": "q_082",
+    "ground_truth_answer": "The dimensionality of each attention head is reduced by dividing the full dimensionality (dmodel) by the number of heads (h = 8), resulting in dk = dv = dmodel/h = 64. This reduction leads to a total computational cost similar to that of single-head attention with full dimensionality, implying that dmodel = 64 * h = 64 * 8 = 512."
+  },
+  {
+    "question_id": "q_083",
+    "ground_truth_answer": "The components of q and k are independent random variables with mean 0 and variance 1. Their dot product, q · k, is calculated as the sum of the products of their corresponding components, denoted as ∑qiki, with i ranging from 1 to some value, and has a specific property related to its mean and variance, although the exact property is not fully described in the given text, it is mentioned that the dot products get large."
+  },
+  {
+    "question_id": "q_084",
+    "ground_truth_answer": "The authors observed nearly identical results to the base model when using their sinusoidal positional encoding with learned positional embeddings."
+  },
+  {
+    "question_id": "q_085",
+    "ground_truth_answer": "The plans include applying attention-based models to other tasks, extending the Transformer to problems involving input and output modalities other than text, investigating local, restricted attention mechanisms to efficiently handle large inputs and outputs such as images, audio, and video, and making generation less sequential."
+  },
+  {
+    "question_id": "q_086",
+    "ground_truth_answer": "Beam search was used for generating outputs, and no checkpoint averaging was utilized."
+  },
+  {
+    "question_id": "q_087",
+    "ground_truth_answer": "The keys, values, and queries in a self-attention layer of the encoder come from the same place, which is the output of the previous layer in the encoder. In this context, the attention mechanism allows each position in the encoder to attend to all positions in the previous layer of the encoder."
+  },
+  {
+    "question_id": "q_088",
+    "ground_truth_answer": "The values of TFLOPS used were 2.8 for K80, 3.7 for K40, 6.0 for M40, and 9.5 for P100."
+  },
+  {
+    "question_id": "q_089",
+    "ground_truth_answer": "Łukasz Kaiser published his research in the Advances in Neural Information Processing Systems (NIPS) and the International Conference on Learning Representations (ICLR), as well as arXiv preprint."
+  },
+  {
+    "question_id": "q_090",
+    "ground_truth_answer": "The model performs surprisingly well despite the lack of task-specific tuning, yielding better results than all previously reported models with the exception of the Recurrent Neural Network Grammar. It also outperforms the Berkeley Parser even when trained only on the WSJ training set of 40K sentences."
+  },
+  {
+    "question_id": "q_091",
+    "ground_truth_answer": "The dimensionality of the input and output is dmodel = 512, and the inner-layer has a dimensionality of dff = 2048, indicating that the inner-layer has a higher dimensionality than the input/output."
+  },
+  {
+    "question_id": "q_092",
+    "ground_truth_answer": "The title of the paper is 'Google’s neural machine translation system: Bridging the gap between human and machine translation', and the arXiv preprint was published in 2016."
+  },
+  {
+    "question_id": "q_093",
+    "ground_truth_answer": "Each training batch contained approximately 25000 source tokens and 25000 target tokens."
+  },
+  {
+    "question_id": "q_094",
+    "ground_truth_answer": "The number of convolutional layers required to connect all pairs of input and output positions varies depending on the type of convolution used. For contiguous kernels, a stack of O(n/k) convolutional layers is required, whereas for dilated convolutions, O(logk(n)) layers are needed."
+  },
+  {
+    "question_id": "q_095",
+    "ground_truth_answer": "Beam search was used with a beam size of 4 and a length penalty α of 0.6. The maximum output length during inference was set to input length + 50, but the process would terminate early when possible."
+  },
+  {
+    "question_id": "q_096",
+    "ground_truth_answer": "Shift-reduce constituent parsing"
+  },
+  {
+    "question_id": "q_097",
+    "ground_truth_answer": "Llion experimented with novel model variants, was responsible for the initial codebase, and worked on efficient inference and visualizations. Their efforts, combined with those of Lukasz and Aidan, who replaced the earlier codebase with tensor2tensor, greatly improved results and massively accelerated the project."
+  },
+  {
+    "question_id": "q_098",
+    "ground_truth_answer": "Self-attention has been used successfully in tasks including reading comprehension, abstractive summarization, textual entailment, and learning task-independent sentence representations."
+  },
+  {
+    "question_id": "q_099",
+    "ground_truth_answer": "Label smoothing hurts perplexity because the model learns to be more unsure, but it improves accuracy and BLEU score."
+  },
+  {
+    "question_id": "q_100",
+    "ground_truth_answer": "The two ends of the spectrum are: (1) deterministic, predictable workflows that call a language model as a tool for a specific task, which adds a limited amount of AI to an existing process, and (2) the other end is not explicitly defined in the provided text, but it implies a higher degree of autonomy."
+  }
+]

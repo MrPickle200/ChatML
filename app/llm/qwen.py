@@ -1,49 +1,20 @@
-from google import genai
-from google.genai import types
-from dotenv import load_dotenv
-from abc import ABC, abstractmethod
-from fastapi import HTTPException
+from app.llm.base import LLMService
 from transformers import AutoTokenizer, AutoModelForCausalLM
-import os
-import asyncio
+from fastapi import HTTPException
 import torch
-
-class LLMService(ABC):
-    @abstractmethod
-    async def generate(self, prompt: str) -> str:
-        pass
+import asyncio
 
 
-class GeminiService(LLMService):
-    def __init__(self):
-        load_dotenv()
-        GEMINI_API_KEY = os.getenv("GEMINI")
-        client = genai.Client(api_key=GEMINI_API_KEY)
-        self.async_client = client.aio
-
-    async def generate(self, prompt: str) -> str:
-        try:
-            response = await self.async_client.models.generate_content(
-                model="gemini-3.1-flash-lite",
-                contents=prompt,
-                config=types.GenerateContentConfig(
-                    thinking_config=types.ThinkingConfig(thinking_budget=0)
-                )
-            )
-            return response.text.strip()    
-        except Exception as e:
-            raise HTTPException(status_code=500, detail= str(e))
-        
-
-class Qwen25SmolService(LLMService):
-    def __init__(self):
+class Qwen25Smol(LLMService):
+    def __init__(self, model : str = "Qwen/Qwen2.5-0.5B-Instruct"):
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         self.tokenizer = AutoTokenizer.from_pretrained(
             "Qwen/Qwen2.5-0.5B-Instruct",
             trust_remote_code=True,
         )
+        self.name = model
         self.model = AutoModelForCausalLM.from_pretrained(
-            "Qwen/Qwen2.5-0.5B-Instruct",
+            model,
             torch_dtype=torch.float16 if self.device == "cuda" else torch.float32,
             device_map="auto",
             trust_remote_code=True,

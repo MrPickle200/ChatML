@@ -1,5 +1,5 @@
 from app.services.retrieval_service import RetrievalService
-from app.services.llm_service import LLMService 
+from app.llm.base import LLMService 
 from app.prompts.base import BasePrompt
 from app.prompts.blank import BlankPrompt
 from app.models.chat import Source, ChatResponse
@@ -104,8 +104,7 @@ class ChatService:
                 {msg["role"].upper() : msg["content"]} for msg in history_messages[-10 : ]
             ]
         standalone_question = await self._generate_standalone_question(question, currently_messages)
-        print(f"New question: {standalone_question}")
-
+        
         retrieval_results = await self.retrieval_service.search(query= standalone_question, dataset_ids= dataset_ids)
         if len(retrieval_results) == 0:
             self.prompt = BlankPrompt()

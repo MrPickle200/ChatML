@@ -27,6 +27,12 @@ class SimplePrompt(BasePrompt):
             - Use the conversation history to understand references
             - If the user's question refers to something mentioned earlier, answer using that referenced entity.
             - Prefer conversation history over retrieved documents when resolving references.
+            
+            When answering mathematical questions:            
+            - Use LaTeX for all mathematical expressions.
+            - Use $...$ for inline equations.
+            - Use $$...$$ for display equations.
+            - Do not use unicode approximations when LaTeX is appropriate.
         """
         return prompt
         

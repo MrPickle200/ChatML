@@ -1,0 +1,602 @@
+[
+  {
+    "question_id": "q_001",
+    "ground_truth_chunk_ids": [
+      "0036863b-95d1-4e11-b4be-aa9ecef6f17f"
+    ]
+  },
+  {
+    "question_id": "q_002",
+    "ground_truth_chunk_ids": [
+      "0d4c49f0-fafa-4213-ba1e-f4aa163b4d0e"
+    ]
+  },
+  {
+    "question_id": "q_003",
+    "ground_truth_chunk_ids": [
+      "19854ad7-aef9-4a44-a4c9-be0ea5340032"
+    ]
+  },
+  {
+    "question_id": "q_004",
+    "ground_truth_chunk_ids": [
+      "248637b9-0ffb-4f44-a5af-0a0e4a2db04b"
+    ]
+  },
+  {
+    "question_id": "q_005",
+    "ground_truth_chunk_ids": [
+      "2acfeaef-1c71-48cf-9eb1-8db231d85173"
+    ]
+  },
+  {
+    "question_id": "q_006",
+    "ground_truth_chunk_ids": [
+      "32625649-1103-49f2-95e0-f84b42e8c6f2"
+    ]
+  },
+  {
+    "question_id": "q_007",
+    "ground_truth_chunk_ids": [
+      "3a2424e1-b7b9-4b23-ae85-2e78a1e9d5a1"
+    ]
+  },
+  {
+    "question_id": "q_008",
+    "ground_truth_chunk_ids": [
+      "403b30cc-e86b-488a-a2ff-33abc0406e64"
+    ]
+  },
+  {
+    "question_id": "q_009",
+    "ground_truth_chunk_ids": [
+      "4f4316e3-5a8d-494e-8a39-3db689ba1e15"
+    ]
+  },
+  {
+    "question_id": "q_010",
+    "ground_truth_chunk_ids": [
+      "60e3daa0-a707-49c5-9c23-9a73951aa646"
+    ]
+  },
+  {
+    "question_id": "q_011",
+    "ground_truth_chunk_ids": [
+      "6a47be69-307e-49c3-9f0c-bb197c2764e3"
+    ]
+  },
+  {
+    "question_id": "q_012",
+    "ground_truth_chunk_ids": [
+      "701c1113-6dd2-4b88-8736-eaaa6bb1e984"
+    ]
+  },
+  {
+    "question_id": "q_013",
+    "ground_truth_chunk_ids": [
+      "78a8047c-27aa-4d6d-8f6a-41f6ad1e0b18"
+    ]
+  },
+  {
+    "question_id": "q_014",
+    "ground_truth_chunk_ids": [
+      "806c86bd-4469-41b5-96ae-d01bed68e411"
+    ]
+  },
+  {
+    "question_id": "q_015",
+    "ground_truth_chunk_ids": [
+      "86fc09ac-949f-49ae-81e0-1fc7d5746895"
+    ]
+  },
+  {
+    "question_id": "q_016",
+    "ground_truth_chunk_ids": [
+      "9152b0cc-e0c0-41c4-944f-fddda7121924"
+    ]
+  },
+  {
+    "question_id": "q_017",
+    "ground_truth_chunk_ids": [
+      "a0c99f0c-624b-4bc0-822c-e9667076ea05"
+    ]
+  },
+  {
+    "question_id": "q_018",
+    "ground_truth_chunk_ids": [
+      "a6cfc95b-fbbe-43a9-8a85-cefd8b89d3f3"
+    ]
+  },
+  {
+    "question_id": "q_019",
+    "ground_truth_chunk_ids": [
+      "b6d1f9ac-f886-40e9-94f9-998e1e9b9a00"
+    ]
+  },
+  {
+    "question_id": "q_020",
+    "ground_truth_chunk_ids": [
+      "be94a0a1-cb9f-4801-a97f-f0246eb35204"
+    ]
+  },
+  {
+    "question_id": "q_021",
+    "ground_truth_chunk_ids": [
+      "ce8334c6-0ef1-4acd-b134-6fb199ace399"
+    ]
+  },
+  {
+    "question_id": "q_022",
+    "ground_truth_chunk_ids": [
+      "e1bc31ff-9b23-432a-9805-8fa3264f8c72"
+    ]
+  },
+  {
+    "question_id": "q_023",
+    "ground_truth_chunk_ids": [
+      "e9c4ce3e-93c2-4e9c-9594-bb76f7913184"
+    ]
+  },
+  {
+    "question_id": "q_024",
+    "ground_truth_chunk_ids": [
+      "f0a09db9-62cd-414c-804f-fcd980814b57"
+    ]
+  },
+  {
+    "question_id": "q_025",
+    "ground_truth_chunk_ids": [
+      "f7554eac-2f6f-4eaf-8996-2618da10e766"
+    ]
+  },
+  {
+    "question_id": "q_026",
+    "ground_truth_chunk_ids": [
+      "009c4667-e82d-4af6-befb-f785dfe86460"
+    ]
+  },
+  {
+    "question_id": "q_027",
+    "ground_truth_chunk_ids": [
+      "09ab311e-10db-454b-b3cb-8026c85ce08b"
+    ]
+  },
+  {
+    "question_id": "q_028",
+    "ground_truth_chunk_ids": [
+      "10bf54b9-5c43-410e-9a48-b9a75bab8ae5"
+    ]
+  },
+  {
+    "question_id": "q_029",
+    "ground_truth_chunk_ids": [
+      "16ca0cac-8c79-4068-a7a1-77087856ae48"
+    ]
+  },
+  {
+    "question_id": "q_030",
+    "ground_truth_chunk_ids": [
+      "23011c69-415f-4e61-bbb3-4abc31391804"
+    ]
+  },
+  {
+    "question_id": "q_031",
+    "ground_truth_chunk_ids": [
+      "2c0d3c47-1454-4684-b88a-200ae92e30fa"
+    ]
+  },
+  {
+    "question_id": "q_032",
+    "ground_truth_chunk_ids": [
+      "3a90557c-dff6-4bbe-a562-7d9074024935"
+    ]
+  },
+  {
+    "question_id": "q_033",
+    "ground_truth_chunk_ids": [
+      "4990d27f-e2ca-49e0-ab84-2478691bef18"
+    ]
+  },
+  {
+    "question_id": "q_034",
+    "ground_truth_chunk_ids": [
+      "4ff37cce-7c27-4b0d-97b9-13343fba421f"
+    ]
+  },
+  {
+    "question_id": "q_035",
+    "ground_truth_chunk_ids": [
+      "64008b6f-b029-4dd6-a25c-61e3385a6f5b"
+    ]
+  },
+  {
+    "question_id": "q_036",
+    "ground_truth_chunk_ids": [
+      "6c036fc8-0403-4f91-bb1f-dc1e3794a3f2"
+    ]
+  },
+  {
+    "question_id": "q_037",
+    "ground_truth_chunk_ids": [
+      "78c87e03-3bcc-41f7-909e-36c3c4457f35"
+    ]
+  },
+  {
+    "question_id": "q_038",
+    "ground_truth_chunk_ids": [
+      "836e73bc-1815-463e-be98-b26a7842379b"
+    ]
+  },
+  {
+    "question_id": "q_039",
+    "ground_truth_chunk_ids": [
+      "8fda62a9-aadc-4131-87c4-663590b23424"
+    ]
+  },
+  {
+    "question_id": "q_040",
+    "ground_truth_chunk_ids": [
+      "94b69ed6-16c8-406d-83be-931ade3286ed"
+    ]
+  },
+  {
+    "question_id": "q_041",
+    "ground_truth_chunk_ids": [
+      "9eba8f90-d3e2-44f8-bf9d-f19a07fe4e1f"
+    ]
+  },
+  {
+    "question_id": "q_042",
+    "ground_truth_chunk_ids": [
+      "aa1cd6ab-0017-40f0-8d49-29c232b0b4ae"
+    ]
+  },
+  {
+    "question_id": "q_043",
+    "ground_truth_chunk_ids": [
+      "b8f70399-be77-4b4d-af6d-4ab97f5775b8"
+    ]
+  },
+  {
+    "question_id": "q_044",
+    "ground_truth_chunk_ids": [
+      "c1218cd9-bcd7-4c44-86f2-f124ee1fbc55"
+    ]
+  },
+  {
+    "question_id": "q_045",
+    "ground_truth_chunk_ids": [
+      "ca226e31-028f-4b56-bd5b-b1f27f4844e5"
+    ]
+  },
+  {
+    "question_id": "q_046",
+    "ground_truth_chunk_ids": [
+      "cee01abe-538f-49ae-a18c-4f293fd934eb"
+    ]
+  },
+  {
+    "question_id": "q_047",
+    "ground_truth_chunk_ids": [
+      "d570c679-cdcb-4207-a960-0b7a6d4e8e3f"
+    ]
+  },
+  {
+    "question_id": "q_048",
+    "ground_truth_chunk_ids": [
+      "e76c5a3a-a871-4326-832d-a0de3130de69"
+    ]
+  },
+  {
+    "question_id": "q_049",
+    "ground_truth_chunk_ids": [
+      "ed91bf28-3c78-41f6-b774-93e92b11ace0"
+    ]
+  },
+  {
+    "question_id": "q_050",
+    "ground_truth_chunk_ids": [
+      "f583afa8-ba30-4350-9dd2-895af02eff13"
+    ]
+  },
+  {
+    "question_id": "q_051",
+    "ground_truth_chunk_ids": [
+      "013f8b86-e721-4ba3-bb88-5b59793a5add"
+    ]
+  },
+  {
+    "question_id": "q_052",
+    "ground_truth_chunk_ids": [
+      "0d48cae2-d867-4445-bd3f-c6a8cc29929d"
+    ]
+  },
+  {
+    "question_id": "q_053",
+    "ground_truth_chunk_ids": [
+      "1623115d-0bd7-4816-9054-9f0d91c141f2"
+    ]
+  },
+  {
+    "question_id": "q_054",
+    "ground_truth_chunk_ids": [
+      "1e6b427c-a07d-4ba3-85ab-dfb71067a19c"
+    ]
+  },
+  {
+    "question_id": "q_055",
+    "ground_truth_chunk_ids": [
+      "22d00e39-c134-4b66-bbeb-83df21059605"
+    ]
+  },
+  {
+    "question_id": "q_056",
+    "ground_truth_chunk_ids": [
+      "2d5aeb58-a87d-40a1-a048-c7da49d9c77c"
+    ]
+  },
+  {
+    "question_id": "q_057",
+    "ground_truth_chunk_ids": [
+      "33ac023b-8a75-4326-9d47-a5a62a141d75"
+    ]
+  },
+  {
+    "question_id": "q_058",
+    "ground_truth_chunk_ids": [
+      "3b32d462-4ede-4866-b406-e549ab09556a"
+    ]
+  },
+  {
+    "question_id": "q_059",
+    "ground_truth_chunk_ids": [
+      "451e8370-f090-44a1-a8e7-4a95696dd2c4"
+    ]
+  },
+  {
+    "question_id": "q_060",
+    "ground_truth_chunk_ids": [
+      "479cd56e-035f-40ae-9b47-707430284dd9"
+    ]
+  },
+  {
+    "question_id": "q_061",
+    "ground_truth_chunk_ids": [
+      "53f43131-61ce-4ce4-a1ea-3d3e81bafc5a"
+    ]
+  },
+  {
+    "question_id": "q_062",
+    "ground_truth_chunk_ids": [
+      "5fedbbff-8b00-4d75-a0d5-75465ea58143"
+    ]
+  },
+  {
+    "question_id": "q_063",
+    "ground_truth_chunk_ids": [
+      "6865a1c8-f02d-4548-9702-743eaa6b98d0"
+    ]
+  },
+  {
+    "question_id": "q_064",
+    "ground_truth_chunk_ids": [
+      "7a2ea392-23c5-47ce-b601-a9a2b95f5188"
+    ]
+  },
+  {
+    "question_id": "q_065",
+    "ground_truth_chunk_ids": [
+      "7e586e7a-0440-48ca-8ae6-6189c3a75b10"
+    ]
+  },
+  {
+    "question_id": "q_066",
+    "ground_truth_chunk_ids": [
+      "8c577a00-bb0b-4b12-935f-152b3f41237f"
+    ]
+  },
+  {
+    "question_id": "q_067",
+    "ground_truth_chunk_ids": [
+      "a224c237-871d-4b90-9fff-264000a0ce01"
+    ]
+  },
+  {
+    "question_id": "q_068",
+    "ground_truth_chunk_ids": [
+      "b085e29e-8f78-456c-9099-d3d366654fcd"
+    ]
+  },
+  {
+    "question_id": "q_069",
+    "ground_truth_chunk_ids": [
+      "c15bd550-56eb-4579-b184-7743b25137c8"
+    ]
+  },
+  {
+    "question_id": "q_070",
+    "ground_truth_chunk_ids": [
+      "cc856bbc-9dc7-4d5c-adf0-df6b220a7f39"
+    ]
+  },
+  {
+    "question_id": "q_071",
+    "ground_truth_chunk_ids": [
+      "db6132d1-76c7-4e73-b4e1-74622a6e11c5"
+    ]
+  },
+  {
+    "question_id": "q_072",
+    "ground_truth_chunk_ids": [
+      "e7cfb156-d950-4116-824e-dcf9696103eb"
+    ]
+  },
+  {
+    "question_id": "q_073",
+    "ground_truth_chunk_ids": [
+      "ec241bd5-34b1-4068-83ab-0db847b88b85"
+    ]
+  },
+  {
+    "question_id": "q_074",
+    "ground_truth_chunk_ids": [
+      "f826d85a-638c-47aa-8e58-ae66017782c1"
+    ]
+  },
+  {
+    "question_id": "q_075",
+    "ground_truth_chunk_ids": [
+      "049df663-6006-4848-9556-106c25c0e721"
+    ]
+  },
+  {
+    "question_id": "q_076",
+    "ground_truth_chunk_ids": [
+      "11935d28-9d2f-4f61-8eaf-c704fd3be4ef"
+    ]
+  },
+  {
+    "question_id": "q_077",
+    "ground_truth_chunk_ids": [
+      "19778295-c15b-4f2f-b796-f1239597d75c"
+    ]
+  },
+  {
+    "question_id": "q_078",
+    "ground_truth_chunk_ids": [
+      "1fb1ab5f-8d65-45c5-97c5-8e94614c74d4"
+    ]
+  },
+  {
+    "question_id": "q_079",
+    "ground_truth_chunk_ids": [
+      "3114def8-20d1-4abe-8656-219b977a411b"
+    ]
+  },
+  {
+    "question_id": "q_080",
+    "ground_truth_chunk_ids": [
+      "3a87400d-785a-44c7-88b7-f63fe7f92d24"
+    ]
+  },
+  {
+    "question_id": "q_081",
+    "ground_truth_chunk_ids": [
+      "404d8982-7ed9-48d1-a870-bcf95a3f6906"
+    ]
+  },
+  {
+    "question_id": "q_082",
+    "ground_truth_chunk_ids": [
+      "54c862c3-ace4-4974-949c-cb3010c38a6b"
+    ]
+  },
+  {
+    "question_id": "q_083",
+    "ground_truth_chunk_ids": [
+      "633c1dc1-4b62-4c7f-8528-89066f001fed"
+    ]
+  },
+  {
+    "question_id": "q_084",
+    "ground_truth_chunk_ids": [
+      "6be68668-44c4-4f1b-abb0-d5497a0bced8"
+    ]
+  },
+  {
+    "question_id": "q_085",
+    "ground_truth_chunk_ids": [
+      "70d00479-fe82-47f5-9d50-ca4d31aaa31b"
+    ]
+  },
+  {
+    "question_id": "q_086",
+    "ground_truth_chunk_ids": [
+      "78f8c9f9-3dac-48f4-9ac0-d308845f239d"
+    ]
+  },
+  {
+    "question_id": "q_087",
+    "ground_truth_chunk_ids": [
+      "843adc84-4a2e-4dbc-8512-65a70837bd00"
+    ]
+  },
+  {
+    "question_id": "q_088",
+    "ground_truth_chunk_ids": [
+      "930ae209-c0f6-43b0-b3c4-acfa07b8f420"
+    ]
+  },
+  {
+    "question_id": "q_089",
+    "ground_truth_chunk_ids": [
+      "9ad31afd-cbae-44b5-83bd-6a087c0350e9"
+    ]
+  },
+  {
+    "question_id": "q_090",
+    "ground_truth_chunk_ids": [
+      "a25bcb70-872f-436a-9413-99fda201898b"
+    ]
+  },
+  {
+    "question_id": "q_091",
+    "ground_truth_chunk_ids": [
+      "a836f2f8-8cc6-417e-9461-aca18236b58a"
+    ]
+  },
+  {
+    "question_id": "q_092",
+    "ground_truth_chunk_ids": [
+      "ad45aac7-5b9a-4c2f-9fa0-176618822aa4"
+    ]
+  },
+  {
+    "question_id": "q_093",
+    "ground_truth_chunk_ids": [
+      "b38a1401-3d1e-464c-b24a-35bf5b77ad38"
+    ]
+  },
+  {
+    "question_id": "q_094",
+    "ground_truth_chunk_ids": [
+      "c6474c42-34af-4785-95ab-fb55153be8fa"
+    ]
+  },
+  {
+    "question_id": "q_095",
+    "ground_truth_chunk_ids": [
+      "cf934ab6-db0e-485f-906d-42a3fafbce6a"
+    ]
+  },
+  {
+    "question_id": "q_096",
+    "ground_truth_chunk_ids": [
+      "d9ee23dc-0dd4-46cb-b563-06f9caa7118f"
+    ]
+  },
+  {
+    "question_id": "q_097",
+    "ground_truth_chunk_ids": [
+      "e097f5e0-81fb-4263-8e87-b1c002d941a7"
+    ]
+  },
+  {
+    "question_id": "q_098",
+    "ground_truth_chunk_ids": [
+      "f1c647d3-8294-4d48-b59a-a7d029410345"
+    ]
+  },
+  {
+    "question_id": "q_099",
+    "ground_truth_chunk_ids": [
+      "f9f27f5e-2535-4678-b20f-fc70e73273de"
+    ]
+  },
+  {
+    "question_id": "q_100",
+    "ground_truth_chunk_ids": [
+      "14413de1-9dba-4124-9498-c38dc27b5215"
+    ]
+  }
+]

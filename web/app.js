@@ -1,4 +1,17 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Configure Marked with KaTeX extension
+    if (typeof markedKatex !== 'undefined') {
+        marked.use(markedKatex({
+            throwOnError: false,
+            nonStandard: true
+        }));
+    } else if (window.markedKatex) {
+        marked.use(window.markedKatex({
+            throwOnError: false,
+            nonStandard: true
+        }));
+    }
+
     // API Configurations
     const API_BASE_URL = 'http://localhost:8000';
     let isServerOnline = false;

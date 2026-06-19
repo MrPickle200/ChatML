@@ -1233,3 +1233,28 @@ body {
         padding: 0 16px;
     }
 }
+
+/* KaTeX LaTeX rendering overrides & styling */
+.message-content .katex-display {
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 8px 0;
+    margin: 12px 0;
+    max-width: 100%;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-color) transparent;
+}
+
+.message-content .katex-display::-webkit-scrollbar {
+    height: 4px;
+}
+
+.message-content .katex-display::-webkit-scrollbar-thumb {
+    background-color: var(--border-color);
+    border-radius: 4px;
+}
+
+.message-content .katex {
+    font-size: 1.05em;
+    color: var(--text-primary);
+}

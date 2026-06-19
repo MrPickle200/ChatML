@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from app.services.chat_service import ChatService
 from app.services.embedding_service import EmbeddingService
-from app.services.llm_service import GeminiService
+from app.llm.llm_router import LLMRouter
 from app.services.retrieval_service import RetrievalService
 from app.services.conversation_service import ConversationService
 from app.prompts.simple import SimplePrompt
@@ -13,7 +13,6 @@ from app.services.context_builder_service import ContextBuilderService
 
 router = APIRouter(prefix="/chat")
 embedding_service = EmbeddingService()
-gemini_service = GeminiService()
 conversation_repo = ConversationRepository(conversation_client)
 conversation_service = ConversationService(conversation_repo)
 context_builder_service = ContextBuilderService(conversation_repo)
@@ -29,7 +28,7 @@ async def get_chat_service() -> ChatService:
     return ChatService(
         retrieval_service= retrieval_service,
         conversation_service= conversation_service,
-        llm_service = gemini_service,
+        llm_service = LLMRouter(),
         prompt = SimplePrompt(),
         context_builder_service= context_builder_service
     )
