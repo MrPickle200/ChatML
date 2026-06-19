@@ -60,6 +60,19 @@ class ChatService:
         }
         return metadata
 
+    async def _generate_standalone_question(self, question : str, currently_messages : list):
+        prompt = f"""
+            === SYSTEM ===
+            Your task is to use conversation history to resolve current question into a standalone question, 
+            which means no ambigous object in the sentence (like it, they, them, ...) 
+
+            === CONVERSATION HISTORY ===
+            {currently_messages}
+
+            === CURRENT QUESTON ===
+            {question}
+        """
+        return await self.llm_service.generate(prompt) 
     
     async def create_conversation(self, conversation_id : str | None = None, title : str | None = None):
         if not conversation_id:
@@ -86,13 +99,21 @@ class ChatService:
             dataset_ids: list[str] | None = None, 
             conversation_id : str | None = None
         ) -> str:
+        history_messages = await self.conversation_service.get_history_message(conversation_id)
+        currently_messages = [
+                {msg["role"].upper() : msg["content"]} for msg in history_messages[-10 : ]
+            ]
+        standalone_question = await self._generate_standalone_question(question, currently_messages)
+        print(f"New question: {standalone_question}")
 
-        retrieval_results = await self.retrieval_service.search(query= question, dataset_ids= dataset_ids)
+        retrieval_results = await self.retrieval_service.search(query= standalone_question, dataset_ids= dataset_ids)
         if len(retrieval_results) == 0:
             self.prompt = BlankPrompt()
+
         sources = self._build_source(retrieval_results)
         context, history_context = await self.context_builder_service.build_context(conversation_id, retrieval_results)
-        prompt = self.prompt.generate_prompt(question, context, history_context)
+        #prompt = self.prompt.generate_prompt(question, context, history_context)
+        prompt = self.prompt.generate_prompt(standalone_question, context, history_context)
         answer = await self.llm_service.generate(prompt)
 
         if not conversation_id:

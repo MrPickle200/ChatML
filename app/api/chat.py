@@ -16,7 +16,7 @@ embedding_service = EmbeddingService()
 gemini_service = GeminiService()
 conversation_repo = ConversationRepository(conversation_client)
 conversation_service = ConversationService(conversation_repo)
-context_builder_service = ContextBuilderService(conversation_repo, gemini_service)
+context_builder_service = ContextBuilderService(conversation_repo)
 
 async def get_chat_service() -> ChatService:
     qdrant_repo =  QdrantRepository(qdrant_client)
