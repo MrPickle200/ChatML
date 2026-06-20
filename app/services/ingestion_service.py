@@ -58,7 +58,6 @@ class IngestionService:
         for chunk, vector in zip(chunks, vectors):
             point = self._build_point(chunk, vector, document)
             points.append(point)
-
         await self.qdrant_repo.upsert_points(points)
 
         return {

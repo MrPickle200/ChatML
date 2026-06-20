@@ -31,9 +31,9 @@ Thông tin về một bộ tài liệu.
   "_id": "dataset_001",
   "name": "MIT Calculus",
   "description": "Single Variable Calculus Notes",
-  "status": "active",
   "created_at": "2026-06-08T10:00:00Z",
-  "updated_at": "2026-06-08T10:00:00Z"
+  "updated_at": "2026-06-08T10:00:00Z",
+  "is_dataset": 1
 }
 ```
 
@@ -44,9 +44,9 @@ Thông tin về một bộ tài liệu.
 | _id | ObjectId | Dataset ID |
 | name | string | Dataset name |
 | description | string | Dataset description |
-| status | string | active/deleted |
 | created_at | datetime | Creation time |
 | updated_at | datetime | Last update |
+| is_dataset | bool | identifier |
 
 ---
 
@@ -70,7 +70,8 @@ Một file thuộc dataset.
   "storage" : {
     "provider" : "local",
     "uri" : "..."
-  }
+  },
+  "is_dataset" : 0
 }
 ```
 
@@ -88,6 +89,7 @@ Một file thuộc dataset.
 | created_at | datetime | Upload time |
 | updated_at | datetime | Update time |
 | storage | json | Storage path |
+| is_dataset | bool | identifier |
 
 ---
 

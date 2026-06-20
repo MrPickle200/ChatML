@@ -9,8 +9,10 @@ class LocalStorage:
         self.base_dir = base_dir
         self.base_dir.mkdir(parents=True, exist_ok=True)
 
-    async def save(self, file, document_id: str) -> Path:
-        document_dir = self.base_dir / document_id
+    async def save(self, file, dataset_id: str, document_id: str) -> Path:
+        dataset_dir = self.base_dir / dataset_id
+        dataset_dir.mkdir(parents=True, exist_ok=True)
+        document_dir = self.base_dir / dataset_id / document_id
         document_dir.mkdir(parents=True, exist_ok=True)
         pth_to_save = document_dir / file.filename
 

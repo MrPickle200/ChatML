@@ -1,5 +1,5 @@
 from qdrant_client import AsyncQdrantClient
-from qdrant_client.models import Distance, VectorParams, PointStruct, Filter, FieldCondition, MatchValue, UpdateResult, FilterSelector, MatchAny
+from qdrant_client.models import Distance, VectorParams, PointStruct, Filter, FieldCondition, MatchValue, UpdateResult, FilterSelector, MatchValue
 from app.core.config import settings
 from app.models.retrieved_chunk import RetrievedChunk
 
@@ -41,15 +41,27 @@ class QdrantRepository:
     async def search(
             self, query_vector: list[float], 
             top_k: int, 
-            dataset_ids: list[str] | None = None, 
-            threshold: float | None = None
+            dataset_id: str, 
+            threshold: float
     ):
+        query_filter = None
+        if not dataset_id == "null":
+            query_filter = Filter(
+                must=[
+                    FieldCondition(
+                        key="dataset_id",
+                        match=MatchValue(value=dataset_id)
+                    )
+                ]
+            )
+
         result = await self.client.query_points(
             collection_name=self.collection_name,
             query=query_vector,
             limit=top_k,
             score_threshold=threshold,
-            with_payload=True
+            with_payload=True,
+            query_filter=query_filter
         )
 
         return [

@@ -40,12 +40,16 @@ async def get_retrieval_service() -> RetrievalService:
     await qdrant_repo.create_collection()
     return RetrievalService(embedding_service, qdrant_repo)
 
+
+# POST APIs
+
 @router.post("/upload-document")
 async def upload_document(
     file: UploadFile = File(...),
+    dataset_id: str = "null",
     service: DocumentService = Depends(get_document_service)
 ):
-    return await service.upload_document(file)
+    return await service.upload_document(file, dataset_id)
 
 
 @router.post("/update-document/{document_id}")
@@ -57,7 +61,23 @@ async def update_document(
     return await service.update_document(document_id, file)
 
 
-@router.get("/get-document/{document_id}")
+@router.post("/retrieval")
+async def retrieval(
+    dataset_id: str = "null",
+    query: str = "test querry", 
+    top_k: int = 5, 
+    threshold: float = 0.5,  
+    service: RetrievalService = Depends(get_retrieval_service)
+):
+    return await service.search(query, dataset_id, top_k, threshold)
+
+@router.post("/create-dataset")
+async def create_dataset(service: DocumentService = Depends(get_document_service)):
+    return await service.create_dataset()
+
+# GET APIs
+
+@router.get("/document/{document_id}")
 async def get_document(
     document_id: str,
     service: DocumentService = Depends(get_document_service)
@@ -65,24 +85,33 @@ async def get_document(
     return await service.get_by_id(document_id)
 
 
-@router.get("/get-list-document")
+@router.get("/list-document")
 async def list_document(service: DocumentService = Depends(get_document_service)):
     return await service.list_documents()
 
 
-@router.delete("/delete-document/{document_id}")
+@router.get("/list-dataset")
+async def list_dataset(service: DocumentService = Depends(get_document_service)):
+    return await service.list_datasets()
+
+
+@router.get("/document-by-dataset/{dataset_id}")
+async def get_document_by_dataset(dataset_id: str, service: DocumentService = Depends(get_document_service)):
+    return await service.get_document_by_dataset_id(dataset_id)
+
+# DELETE APIs
+
+@router.delete("/document/{document_id}")
 async def delete_document(
     document_id: str,
     service: DocumentService = Depends(get_document_service)
 ):
     return await service.delete(document_id)
 
-@router.post("/retrieval")
-async def retrieval(
-    query: str = "test querry", 
-    top_k: int = 5, 
-    threshold: float = 0.5, 
-    dataset_ids: list[str] | None = None, 
-    service: RetrievalService = Depends(get_retrieval_service)
+
+@router.delete("/dataset/{dataset_id}")
+async def delete_dataset(
+    dataset_id: str,
+    service: DocumentService = Depends(get_document_service)
 ):
-    return await service.search(query, dataset_ids, top_k, threshold)
+    return await service.delete_dataset(dataset_id)
