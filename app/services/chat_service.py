@@ -8,6 +8,7 @@ from app.services.conversation_service import ConversationService
 from app.services.context_builder_service import ContextBuilderService
 from datetime import datetime, timezone
 from uuid import uuid4
+import asyncio
 
 class ChatService:
     def __init__(
@@ -117,14 +118,21 @@ class ChatService:
 
         if not conversation_id:
             conversation_id = str(uuid4())
-            title = await self.llm_service.generate(f"Create ONE 4-words title for this question {question}. Do not wrap them in ** **.")
-            await self.create_conversation(conversation_id, title)
+            async def generate_title():
+                title = await self.llm_service.generate(f"Create ONE 4-words title for this question {question}. Do not wrap them in ** **.")
+                await self.create_conversation(conversation_id, title)
+            db_tasks = [generate_title()]
+        else:
+            db_tasks = []
 
         user_message_metadata = self._build_message_metadata(conversation_id, "user", question)
         sources_to_save = self._build_source(retrieval_results, save_into_db= True)
         bot_message_metadata = self._build_message_metadata(conversation_id, "bot", answer, sources_to_save)
-        await self.conversation_service.add_message(user_message_metadata)
-        await self.conversation_service.add_message(bot_message_metadata)
+        
+        db_tasks.append(self.conversation_service.add_message(user_message_metadata))
+        db_tasks.append(self.conversation_service.add_message(bot_message_metadata))
+
+        await asyncio.gather(*db_tasks)
 
         return ChatResponse(
             answer= answer,

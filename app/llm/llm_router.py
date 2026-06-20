@@ -12,9 +12,9 @@ logger = logging.getLogger(__name__)
 class LLMRouter(LLMService):
     def __init__(self):
         self.models: list[LLMService] = [
+            Gemini(),
             GroqModel(model="llama-3.3-70b-versatile"),
             GroqModel(model="llama-3.1-8b-instant"),
-            Gemini(),
         ]
 
     async def generate(self, prompt: str):
