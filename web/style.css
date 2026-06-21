@@ -1258,3 +1258,215 @@ body {
     font-size: 1.05em;
     color: var(--text-primary);
 }
+
+/* Chat Scope Bar Styling */
+.chat-scope-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 24px;
+    background: rgba(255, 255, 255, 0.015);
+    border-bottom: 1px solid var(--border-color);
+    gap: 12px;
+    z-index: 10;
+    flex-shrink: 0;
+}
+
+.scope-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.76rem;
+    color: var(--text-muted);
+}
+
+.scope-icon {
+    width: 14px;
+    height: 14px;
+    color: var(--accent-secondary);
+}
+
+.chat-dataset-select {
+    padding: 6px 12px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    color: white;
+    font-size: 0.74rem;
+    outline: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    max-width: 250px;
+}
+
+.chat-dataset-select:hover {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(138, 75, 243, 0.4);
+}
+
+/* Dataset Tree Accordion Styling */
+.dataset-item {
+    background: rgba(255, 255, 255, 0.01);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    margin-bottom: 8px;
+    overflow: hidden;
+    transition: all 0.2s ease;
+}
+
+.dataset-item:hover {
+    border-color: rgba(138, 75, 243, 0.2);
+}
+
+.dataset-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.01);
+    transition: background 0.2s ease;
+}
+
+.dataset-header:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.dataset-title-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    overflow: hidden;
+    flex: 1;
+}
+
+.dataset-toggle-icon {
+    width: 14px;
+    height: 14px;
+    color: var(--text-muted);
+    transition: transform 0.2s ease;
+}
+
+.dataset-item.expanded .dataset-toggle-icon {
+    transform: rotate(90deg);
+}
+
+.dataset-name {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: white;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.dataset-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.dataset-action-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.dataset-action-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+}
+
+.dataset-action-btn.delete-dataset-btn:hover {
+    background: rgba(239, 68, 68, 0.1);
+    color: #f87171;
+}
+
+.dataset-docs {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 4px 8px 8px 24px;
+    border-top: 1px dashed var(--border-color);
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.dataset-docs.collapsed {
+    display: none;
+}
+
+/* Document inside dataset item style */
+.dataset-doc-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 10px;
+    background: transparent;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.dataset-doc-item:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.dataset-doc-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    overflow: hidden;
+    flex: 1;
+}
+
+.dataset-doc-icon {
+    width: 13px;
+    height: 13px;
+    color: var(--accent-secondary);
+    flex-shrink: 0;
+}
+
+.dataset-doc-name {
+    font-size: 0.74rem;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.dataset-doc-meta {
+    font-size: 0.6rem;
+    color: var(--text-muted);
+    margin-left: 6px;
+}
+
+.dataset-doc-action-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.dataset-doc-action-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+}
+
+.dataset-doc-action-btn.delete-doc-btn:hover {
+    background: rgba(239, 68, 68, 0.1);
+    color: #f87171;
+}

@@ -23,6 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const messagesContainer = document.getElementById('messagesContainer');
     const statusDot = document.getElementById('statusDot');
     const statusText = document.getElementById('statusText');
+    const chatDatasetSelect = document.getElementById('chatDatasetSelect');
     
     // Sidebar DOM Selectors
     const toggleSidebarBtn = document.getElementById('toggleSidebarBtn');
@@ -35,6 +36,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const uploadStatusText = document.getElementById('uploadStatusText');
     const documentList = document.getElementById('documentList');
     const docCount = document.getElementById('docCount');
+    const uploadDatasetSelect = document.getElementById('uploadDatasetSelect');
+    const createDatasetBtn = document.getElementById('createDatasetBtn');
 
     // Tabs & Conversations DOM Selectors
     const conversationsTabBtn = document.getElementById('conversationsTabBtn');
@@ -43,6 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const documentsTabContent = document.getElementById('documentsTabContent');
     const newChatBtn = document.getElementById('newChatBtn');
     const conversationList = document.getElementById('conversationList');
+    const inputPanel = document.querySelector('.input-panel');
 
     let currentConversationId = null;
 
@@ -142,84 +146,116 @@ document.addEventListener('DOMContentLoaded', () => {
     checkServerStatus();
     setInterval(checkServerStatus, 10000);
 
-    // Fetch and display uploaded documents
+    // Fetch and display uploaded documents grouped by dataset
     async function fetchDocuments() {
         if (!isServerOnline) return;
         
         try {
-            const response = await fetch(`${API_BASE_URL}/document/get-list-document`);
-            if (!response.ok) throw new Error('Failed to load documents');
-            
-            const data = await response.json();
-            const docs = data.list_document || [];
-            
-            // Cache document names by ID
-            docs.forEach(doc => {
-                if (doc._id && doc.filename) {
-                    documentNameCache[doc._id] = doc.filename;
+            // 1. Fetch datasets
+            const datasetResponse = await fetch(`${API_BASE_URL}/document/list-dataset`);
+            if (!datasetResponse.ok) throw new Error('Không thể tải danh sách bộ dữ liệu');
+            const datasetData = await datasetResponse.json();
+            const datasets = datasetData.list_dataset || [];
+
+            // Update Dataset counts
+            docCount.textContent = datasets.length;
+
+            // Save selected values from dropdowns before rebuilding options
+            const prevUploadSelect = uploadDatasetSelect ? uploadDatasetSelect.value : 'null';
+            const prevChatSelect = chatDatasetSelect ? chatDatasetSelect.value : 'null';
+
+            // Rebuild uploadDatasetSelect options
+            if (uploadDatasetSelect) {
+                uploadDatasetSelect.innerHTML = '<option value="null">-- Tạo tự động --</option>';
+                datasets.forEach(ds => {
+                    const name = (ds.name === 'blank' || !ds.name) ? `Bộ dữ liệu #${ds._id.substring(0, 6)}` : ds.name;
+                    uploadDatasetSelect.innerHTML += `<option value="${ds._id}">${escapeHtml(name)}</option>`;
+                });
+                // Restore previous value if exists
+                if (Array.from(uploadDatasetSelect.options).some(opt => opt.value === prevUploadSelect)) {
+                    uploadDatasetSelect.value = prevUploadSelect;
                 }
-            });
-            
-            // Update document counter badge
-            docCount.textContent = docs.length;
-            
-            if (docs.length === 0) {
+            }
+
+            // Rebuild chatDatasetSelect options
+            if (chatDatasetSelect) {
+                chatDatasetSelect.innerHTML = '<option value="null">Tất cả tài liệu (Default)</option>';
+                datasets.forEach(ds => {
+                    const name = (ds.name === 'blank' || !ds.name) ? `Bộ dữ liệu #${ds._id.substring(0, 6)}` : ds.name;
+                    chatDatasetSelect.innerHTML += `<option value="${ds._id}">${escapeHtml(name)}</option>`;
+                });
+                // Restore previous value if exists
+                if (Array.from(chatDatasetSelect.options).some(opt => opt.value === prevChatSelect)) {
+                    chatDatasetSelect.value = prevChatSelect;
+                }
+            }
+
+            if (datasets.length === 0) {
                 documentList.innerHTML = `
                     <div class="empty-docs">
                         <i data-lucide="inbox"></i>
-                        <p>Chưa có tài liệu nào.<br>Hãy tải lên tài liệu để huấn luyện bot!</p>
+                        <p>Chưa có bộ dữ liệu nào.<br>Bấm nút (+) ở trên để tạo mới!</p>
                     </div>
                 `;
                 lucide.createIcons();
                 return;
             }
-            
-            // Render Document items
-            documentList.innerHTML = docs.map(doc => {
-                const docId = doc._id;
-                const filename = doc.filename;
-                const size = formatBytes(doc.file_size_byte);
-                const fileType = doc.file_type || filename.split('.').pop().toLowerCase();
-                
-                // Select file icon based on extension
-                let iconName = 'file-text';
-                if (fileType === 'pdf') iconName = 'file-text';
-                else if (fileType === 'docx') iconName = 'file-type-2';
-                else if (fileType === 'txt') iconName = 'file-code';
-                else if (fileType === 'md') iconName = 'file-edit';
-                
+
+            // Render Dataset list (documents nested inside will load on demand)
+            documentList.innerHTML = datasets.map(ds => {
+                const dsId = ds._id;
+                const dsName = (ds.name === 'blank' || !ds.name) ? `Bộ dữ liệu #${dsId.substring(0, 6)}` : ds.name;
+
                 return `
-                    <div class="document-item" id="doc-item-${docId}">
-                        <div class="doc-info">
-                            <i data-lucide="${iconName}" class="doc-type-icon"></i>
-                            <div class="doc-details">
-                                <span class="doc-name" title="${escapeHtml(filename)}">${escapeHtml(filename)}</span>
-                                <span class="doc-meta">v${doc.version || 1} • ${size}</span>
+                    <div class="dataset-item" id="dataset-item-${dsId}">
+                        <div class="dataset-header" onclick="toggleDataset('${dsId}')">
+                            <div class="dataset-title-group">
+                                <i data-lucide="chevron-right" class="dataset-toggle-icon"></i>
+                                <span class="dataset-name" title="${escapeHtml(dsName)}">${escapeHtml(dsName)}</span>
+                            </div>
+                            <div class="dataset-actions" onclick="event.stopPropagation();">
+                                <button class="dataset-action-btn rename-dataset-btn" data-id="${dsId}" data-name="${escapeHtml(dsName)}" title="Đổi tên bộ dữ liệu">
+                                    <i data-lucide="edit-3" style="width: 12px; height: 12px;"></i>
+                                </button>
+                                <button class="dataset-action-btn delete-dataset-btn" data-id="${dsId}" data-name="${escapeHtml(dsName)}" title="Xóa bộ dữ liệu">
+                                    <i data-lucide="trash-2" style="width: 12px; height: 12px;"></i>
+                                </button>
                             </div>
                         </div>
-                        <button class="doc-action-btn delete-doc-btn" data-id="${docId}" data-name="${escapeHtml(filename)}" title="Xóa tài liệu">
-                            <i data-lucide="trash-2"></i>
-                        </button>
+                        <div class="dataset-docs collapsed" id="dataset-docs-${dsId}" data-loaded="false">
+                            <div class="empty-docs" style="padding: 10px 0; opacity: 0.6; font-size: 0.7rem;">
+                                <p>Nhấp để tải danh sách tài liệu...</p>
+                            </div>
+                        </div>
                     </div>
                 `;
             }).join('');
-            
-            // Add Delete Event Listeners
-            document.querySelectorAll('.delete-doc-btn').forEach(btn => {
+
+            // Add Delete Dataset Listeners
+            document.querySelectorAll('.delete-dataset-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const id = btn.getAttribute('data-id');
                     const name = btn.getAttribute('data-name');
-                    handleDeleteDocument(id, name);
+                    handleDeleteDataset(id, name);
                 });
             });
-            
+
+            // Add Rename Dataset Listeners
+            document.querySelectorAll('.rename-dataset-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = btn.getAttribute('data-id');
+                    const name = btn.getAttribute('data-name');
+                    handleRenameDataset(id, name);
+                });
+            });
+
             lucide.createIcons();
         } catch (error) {
-            console.error('Error fetching documents:', error);
+            console.error('Error fetching datasets:', error);
             documentList.innerHTML = `
                 <div class="empty-docs" style="color: #ef4444;">
                     <i data-lucide="alert-triangle"></i>
-                    <p>Lỗi tải danh sách tài liệu</p>
+                    <p>Lỗi tải danh sách bộ dữ liệu</p>
                 </div>
             `;
             lucide.createIcons();
@@ -453,8 +489,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Delete Document Action
-    async function handleDeleteDocument(documentId, filename) {
-        if (!confirm(`Bạn có chắc chắn muốn xóa tài liệu "${filename}" khỏi cơ sở tri thức? Hành động này sẽ xóa toàn bộ vector lưu trữ.`)) {
+    async function handleDeleteDocument(documentId, datasetId, filename) {
+        if (!confirm(`Bạn có chắc chắn muốn xóa tài liệu "${filename}" khỏi bộ dữ liệu? Hành động này sẽ xóa toàn bộ vector lưu trữ của tài liệu.`)) {
             return;
         }
 
@@ -465,7 +501,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
-            const response = await fetch(`${API_BASE_URL}/document/delete-document/${documentId}`, {
+            const response = await fetch(`${API_BASE_URL}/document/document?document_id=${documentId}&dataset_id=${datasetId}`, {
                 method: 'DELETE'
             });
 
@@ -480,6 +516,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 docItem.style.pointerEvents = 'auto';
             }
         }
+    }
+
+    // Create Dataset button listener
+    if (createDatasetBtn) {
+        createDatasetBtn.addEventListener('click', handleCreateDataset);
     }
 
     // Drag and Drop Logic
@@ -546,7 +587,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Upload using XMLHttpRequest to monitor progress
         const xhr = new XMLHttpRequest();
-        xhr.open('POST', `${API_BASE_URL}/document/upload-document`, true);
+        const datasetId = uploadDatasetSelect ? uploadDatasetSelect.value : 'null';
+        xhr.open('POST', `${API_BASE_URL}/document/upload-document?dataset_id=${datasetId}`, true);
 
         // Track upload progress
         xhr.upload.addEventListener('progress', (e) => {
@@ -570,8 +612,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     uploadStatusText.textContent = 'Tải lên thành công!';
                     uploadStatusText.style.color = '#10b981'; // Green success color
                     
-                    // Refresh document list
-                    fetchDocuments();
+                    // Refresh document list and auto-expand the target dataset
+                    fetchDocuments().then(() => {
+                        const uploadedDsId = result.dataset_id;
+                        if (uploadedDsId && uploadedDsId !== 'null') {
+                            toggleDataset(uploadedDsId);
+                        }
+                    });
 
                     // Hide progress after 2.5s
                     setTimeout(() => {
@@ -636,6 +683,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (currentConversationId) {
                 chatUrl.searchParams.append('conversation_id', currentConversationId);
             }
+            const selectedDatasetId = chatDatasetSelect ? chatDatasetSelect.value : 'null';
+            chatUrl.searchParams.append('dataset_id', selectedDatasetId);
 
             const response = await fetch(chatUrl, {
                 method: 'POST',
@@ -884,4 +933,176 @@ document.addEventListener('DOMContentLoaded', () => {
         };
         return text.replace(/[&<>"']/g, function(m) { return map[m]; });
     }
+
+
+
+    // Create a new Dataset
+    async function handleCreateDataset() {
+        if (!isServerOnline) return;
+        
+        const name = prompt('Nhập tên bộ dữ liệu (Dataset) mới:');
+        if (name === null) return;
+        
+        const cleanName = name.trim();
+        if (!cleanName) {
+            alert('Tên bộ dữ liệu không được để trống!');
+            return;
+        }
+
+        const desc = prompt('Nhập mô tả cho bộ dữ liệu (tùy chọn):') || '';
+        
+        try {
+            const createResponse = await fetch(`${API_BASE_URL}/document/create-dataset`, {
+                method: 'POST'
+            });
+            if (!createResponse.ok) throw new Error('Không thể tạo bộ dữ liệu');
+            const createData = await createResponse.json();
+            const datasetId = createData.dataset_id;
+
+            const updateResponse = await fetch(`${API_BASE_URL}/document/update-dataset/${datasetId}?name=${encodeURIComponent(cleanName)}&description=${encodeURIComponent(desc)}`, {
+                method: 'POST'
+            });
+            if (!updateResponse.ok) throw new Error('Không thể đặt tên bộ dữ liệu');
+
+            await fetchDocuments();
+            if (uploadDatasetSelect) {
+                uploadDatasetSelect.value = datasetId;
+            }
+        } catch (error) {
+            alert(`Lỗi tạo bộ dữ liệu: ${error.message}`);
+        }
+    }
+
+    // Rename an existing Dataset
+    async function handleRenameDataset(datasetId, currentName) {
+        const newName = prompt('Nhập tên mới cho bộ dữ liệu:', currentName);
+        if (newName === null) return;
+        
+        const cleanName = newName.trim();
+        if (!cleanName) {
+            alert('Tên bộ dữ liệu không được để trống!');
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/document/update-dataset/${datasetId}?name=${encodeURIComponent(cleanName)}`, {
+                method: 'POST'
+            });
+            if (!response.ok) throw new Error('Không thể đổi tên bộ dữ liệu');
+            fetchDocuments();
+        } catch (error) {
+            alert(`Lỗi đổi tên: ${error.message}`);
+        }
+    }
+
+    // Delete a Dataset and all its documents
+    async function handleDeleteDataset(datasetId, name) {
+        if (!confirm(`Bạn có chắc chắn muốn xóa bộ dữ liệu "${name}"? Hành động này sẽ xóa tất cả tài liệu bên trong và toàn bộ vector lưu trữ.`)) {
+            return;
+        }
+
+        const datasetItem = document.getElementById(`dataset-item-${datasetId}`);
+        if (datasetItem) {
+            datasetItem.style.opacity = '0.5';
+            datasetItem.style.pointerEvents = 'none';
+        }
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/document/dataset/${datasetId}`, {
+                method: 'DELETE'
+            });
+            if (!response.ok) throw new Error('Không thể xóa bộ dữ liệu');
+            fetchDocuments();
+        } catch (error) {
+            alert(`Lỗi: ${error.message}`);
+            if (datasetItem) {
+                datasetItem.style.opacity = '1';
+                datasetItem.style.pointerEvents = 'auto';
+            }
+        }
+    }
+
+    // Global toggle helper for accordions (loads documents dynamically on demand)
+    window.toggleDataset = async function(datasetId) {
+        const docContainer = document.getElementById(`dataset-docs-${datasetId}`);
+        const itemContainer = document.getElementById(`dataset-item-${datasetId}`);
+        if (!docContainer || !itemContainer) return;
+
+        const isCollapsed = docContainer.classList.contains('collapsed');
+        
+        // If expanding and documents are not yet loaded, fetch them
+        if (isCollapsed && docContainer.getAttribute('data-loaded') === 'false') {
+            docContainer.innerHTML = `
+                <div class="empty-docs" style="padding: 10px 0; opacity: 0.6; font-size: 0.7rem; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                    <div class="typing-indicator" style="scale: 0.8; padding: 0; display: inline-flex;">
+                        <span class="typing-dot" style="background-color: var(--accent-secondary);"></span>
+                        <span class="typing-dot" style="background-color: var(--accent-secondary);"></span>
+                        <span class="typing-dot" style="background-color: var(--accent-secondary);"></span>
+                    </div>
+                    <span>Đang tải...</span>
+                </div>
+            `;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/document/document-by-dataset/${datasetId}`);
+                if (!response.ok) throw new Error('Không thể tải tài liệu');
+                const docs = await response.json() || [];
+
+                if (docs.length === 0) {
+                    docContainer.innerHTML = `<div class="empty-docs" style="padding: 10px 0; opacity: 0.6; font-size: 0.7rem;"><p>Không có tài liệu nào</p></div>`;
+                } else {
+                    docContainer.innerHTML = docs.map(doc => {
+                        const docId = doc._id;
+                        const filename = doc.filename;
+                        const size = doc.file_size_byte ? formatBytes(doc.file_size_byte) : '';
+                        const fileType = filename.split('.').pop().toLowerCase();
+                        
+                        let iconName = 'file-text';
+                        if (fileType === 'pdf') iconName = 'file-text';
+                        else if (fileType === 'docx') iconName = 'file-type-2';
+                        else if (fileType === 'txt') iconName = 'file-code';
+                        else if (fileType === 'md') iconName = 'file-edit';
+
+                        // Save document name in cache
+                        documentNameCache[docId] = filename;
+
+                        return `
+                            <div class="dataset-doc-item" id="doc-item-${docId}">
+                                <div class="dataset-doc-info">
+                                    <i data-lucide="${iconName}" class="dataset-doc-icon"></i>
+                                    <span class="dataset-doc-name" title="${escapeHtml(filename)}">
+                                        ${escapeHtml(filename)}
+                                        ${size ? `<span class="dataset-doc-meta">${size}</span>` : ''}
+                                    </span>
+                                </div>
+                                <button class="dataset-doc-action-btn delete-doc-btn" data-id="${docId}" data-dataset-id="${datasetId}" data-name="${escapeHtml(filename)}" title="Xóa tài liệu">
+                                    <i data-lucide="trash-2" style="width: 12px; height: 12px;"></i>
+                                </button>
+                            </div>
+                        `;
+                    }).join('');
+
+                    // Add Delete Document event listeners for newly loaded buttons
+                    docContainer.querySelectorAll('.delete-doc-btn').forEach(btn => {
+                        btn.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            const id = btn.getAttribute('data-id');
+                            const dsId = btn.getAttribute('data-dataset-id');
+                            const name = btn.getAttribute('data-name');
+                            handleDeleteDocument(id, dsId, name);
+                        });
+                    });
+                }
+                
+                docContainer.setAttribute('data-loaded', 'true');
+            } catch (error) {
+                console.error(`Error loading documents for dataset ${datasetId}:`, error);
+                docContainer.innerHTML = `<div class="empty-docs" style="padding: 10px 0; color: #ef4444; font-size: 0.7rem;"><p>Lỗi tải tài liệu</p></div>`;
+            }
+        }
+        
+        docContainer.classList.toggle('collapsed');
+        itemContainer.classList.toggle('expanded');
+        lucide.createIcons();
+    };
 });

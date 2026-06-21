@@ -8,12 +8,14 @@ from app.services.document_service import DocumentService
 def test_upload_document_success():
     # Setup mocks
     mock_repo = MagicMock()
-    mock_repo.insert = AsyncMock()
+    mock_repo.insert_document = AsyncMock()
+    mock_repo.create_dataset = AsyncMock()
+    mock_repo.update_dataset = AsyncMock()
+    mock_repo.delete_document = AsyncMock()
     
     mock_storage = MagicMock()
     mock_storage.save = AsyncMock(return_value=Path("data/test/doc1/test.pdf"))
-    # In upload_document, lines 92 and 149 do calls. Let's use AsyncMock to satisfy any awaits
-    mock_storage.delete = AsyncMock()
+    mock_storage.delete_document = MagicMock()
     
     mock_ingestion = MagicMock()
     mock_ingestion.ingest_document = AsyncMock(return_value={"chunks_created": 5, "points_created": 5})
@@ -37,7 +39,7 @@ def test_upload_document_success():
             assert res["points_created"] == 5
             
             mock_storage.save.assert_called_once()
-            mock_repo.insert.assert_called_once()
+            mock_repo.insert_document.assert_called_once()
             mock_ingestion.ingest_document.assert_called_once()
 
     asyncio.run(run_test())
@@ -79,12 +81,12 @@ def test_upload_document_too_large():
 
 def test_upload_document_exception_cleanup():
     mock_repo = MagicMock()
-    mock_repo.insert = AsyncMock(side_effect=Exception("DB Error"))
-    mock_repo.delete = AsyncMock()
+    mock_repo.insert_document = AsyncMock(side_effect=Exception("DB Error"))
+    mock_repo.delete_document = AsyncMock()
     
     mock_storage = MagicMock()
     mock_storage.save = AsyncMock(return_value=Path("data/test/doc1/test.pdf"))
-    mock_storage.delete = AsyncMock()
+    mock_storage.delete_document = MagicMock()
     
     mock_ingestion = MagicMock()
 
@@ -102,20 +104,22 @@ def test_upload_document_exception_cleanup():
                 await service.upload_document(mock_file)
             
             assert exc_info.value.status_code == 500
-            mock_repo.delete.assert_called_once()
-            mock_storage.delete.assert_called_once()
+            mock_repo.delete_document.assert_called_once()
+            mock_storage.delete_document.assert_called_once()
 
     asyncio.run(run_test())
 
 def test_update_document_success():
     mock_repo = MagicMock()
-    mock_repo.find_by_id = AsyncMock(return_value={
+    mock_repo.find_document_by_id = AsyncMock(return_value={
         "_id": "doc1",
         "version": 1,
         "storage": {"uri": "data/test/doc1/old.pdf"},
-        "filename": "old.pdf"
+        "filename": "old.pdf",
+        "dataset_id": "ds1"
     })
-    mock_repo.update = AsyncMock()
+    mock_repo.update_document = AsyncMock()
+    mock_repo.update_dataset = AsyncMock()
 
     mock_storage = MagicMock()
     mock_storage.replace = AsyncMock(return_value=Path("data/test/doc1/new.pdf"))
@@ -137,14 +141,14 @@ def test_update_document_success():
             assert res["status"] == "ok"
             assert res["document_id"] == "doc1"
             
-            mock_repo.update.assert_called_once()
+            mock_repo.update_document.assert_called_once()
             mock_ingestion.update_document.assert_called_once()
 
     asyncio.run(run_test())
 
 def test_update_document_not_found():
     mock_repo = MagicMock()
-    mock_repo.find_by_id = AsyncMock(return_value=None)
+    mock_repo.find_document_by_id = AsyncMock(return_value=None)
     mock_storage = MagicMock()
     mock_ingestion = MagicMock()
     service = DocumentService(mock_repo, mock_storage, mock_ingestion)
@@ -164,13 +168,13 @@ def test_update_document_not_found():
 
 def test_get_by_id_success():
     mock_repo = MagicMock()
-    mock_repo.find_by_id = AsyncMock(return_value={"_id": "doc1", "filename": "test.pdf"})
+    mock_repo.find_document_by_id = AsyncMock(return_value={"_id": "doc1", "filename": "test.pdf"})
     mock_storage = MagicMock()
     mock_ingestion = MagicMock()
     service = DocumentService(mock_repo, mock_storage, mock_ingestion)
 
     async def run_test():
-        res = await service.get_by_id("doc1")
+        res = await service.get_document_by_id("doc1")
         assert res["status"] == "ok"
         assert res["metadata"]["_id"] == "doc1"
 
@@ -178,21 +182,21 @@ def test_get_by_id_success():
 
 def test_get_by_id_not_found():
     mock_repo = MagicMock()
-    mock_repo.find_by_id = AsyncMock(return_value=None)
+    mock_repo.find_document_by_id = AsyncMock(return_value=None)
     mock_storage = MagicMock()
     mock_ingestion = MagicMock()
     service = DocumentService(mock_repo, mock_storage, mock_ingestion)
 
     async def run_test():
         with pytest.raises(HTTPException) as exc_info:
-            await service.get_by_id("doc1")
+            await service.get_document_by_id("doc1")
         assert exc_info.value.status_code == 404
 
     asyncio.run(run_test())
 
 def test_list_documents():
     mock_repo = MagicMock()
-    mock_repo.list_all = AsyncMock(return_value=[{"_id": "doc1"}])
+    mock_repo.list_all_document = AsyncMock(return_value=[{"_id": "doc1"}])
     mock_storage = MagicMock()
     mock_ingestion = MagicMock()
     service = DocumentService(mock_repo, mock_storage, mock_ingestion)
@@ -206,16 +210,10 @@ def test_list_documents():
 
 def test_delete_success():
     mock_repo = MagicMock()
-    mock_repo.find_by_id = AsyncMock(return_value={
-        "_id": "doc1",
-        "storage": {"uri": "data/test/doc1/test.pdf"}
-    })
-    mock_repo.delete = AsyncMock()
+    mock_repo.delete_document = AsyncMock()
 
-    # In delete, self.storage.delete(document_id) is synchronous.
-    # To mock a synchronous function, we define a normal function/mock.
     mock_storage = MagicMock()
-    mock_storage.delete = MagicMock()
+    mock_storage.delete_document = MagicMock()
 
     mock_ingestion = MagicMock()
     mock_ingestion.delete_document = AsyncMock()
@@ -223,24 +221,20 @@ def test_delete_success():
     service = DocumentService(mock_repo, mock_storage, mock_ingestion)
 
     async def run_test():
-        res = await service.delete("doc1")
+        res = await service.delete_document("ds1", "doc1")
         assert res["status"] == "ok"
-        mock_storage.delete.assert_called_once_with("doc1")
-        mock_repo.delete.assert_called_once_with("doc1")
+        mock_storage.delete_document.assert_called_once_with("ds1", "doc1")
+        mock_repo.delete_document.assert_called_once_with("doc1")
         mock_ingestion.delete_document.assert_called_once_with("doc1")
 
     asyncio.run(run_test())
 
 def test_delete_file_not_found():
     mock_repo = MagicMock()
-    mock_repo.find_by_id = AsyncMock(return_value={
-        "_id": "doc1",
-        "storage": {"uri": "data/test/doc1/test.pdf"}
-    })
-    mock_repo.delete = AsyncMock()
+    mock_repo.delete_document = AsyncMock()
 
     mock_storage = MagicMock()
-    mock_storage.delete = MagicMock(side_effect=FileNotFoundError("Not found"))
+    mock_storage.delete_document = MagicMock(side_effect=FileNotFoundError("Not found"))
 
     mock_ingestion = MagicMock()
     mock_ingestion.delete_document = AsyncMock()
@@ -248,9 +242,9 @@ def test_delete_file_not_found():
     service = DocumentService(mock_repo, mock_storage, mock_ingestion)
 
     async def run_test():
-        res = await service.delete("doc1")
+        res = await service.delete_document("ds1", "doc1")
         assert res["status"] == "ok"
-        mock_repo.delete.assert_called_once_with("doc1")
+        mock_repo.delete_document.assert_called_once_with("doc1")
         mock_ingestion.delete_document.assert_called_once_with("doc1")
 
     asyncio.run(run_test())
@@ -268,3 +262,4 @@ if __name__ == "__main__":
     test_delete_success()
     test_delete_file_not_found()
     print("DocumentService tests passed successfully!")
+

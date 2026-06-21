@@ -71,9 +71,20 @@ async def retrieval(
 ):
     return await service.search(query, dataset_id, top_k, threshold)
 
+
 @router.post("/create-dataset")
 async def create_dataset(service: DocumentService = Depends(get_document_service)):
     return await service.create_dataset()
+
+
+@router.post("/update-dataset/{dataset_id}")
+async def update_dataset(
+    dataset_id: str,
+    name: str = "null",
+    description: str = "null",
+    service: DocumentService = Depends(get_document_service)
+):
+    return await service.update_dataset(dataset_id, name, description)
 
 # GET APIs
 

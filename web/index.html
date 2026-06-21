@@ -98,6 +98,12 @@
                             <i data-lucide="upload-cloud"></i>
                             <span>Tải lên tài liệu</span>
                         </h2>
+                        <div class="dataset-select-wrapper" style="margin-bottom: 12px;">
+                            <label for="uploadDatasetSelect" style="font-size: 0.72rem; color: var(--text-muted); display: block; margin-bottom: 6px;">Chọn bộ dữ liệu (Dataset):</label>
+                            <select id="uploadDatasetSelect" style="width: 100%; padding: 8px 10px; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); border-radius: 8px; color: white; font-size: 0.76rem; outline: none; cursor: pointer; transition: all 0.2s ease;">
+                                <option value="null">-- Tạo tự động --</option>
+                            </select>
+                        </div>
                         <div class="upload-zone" id="uploadZone">
                             <input type="file" id="fileInput" accept=".pdf,.docx,.txt,.md" style="display: none;" />
                             <i data-lucide="file-up" class="upload-icon"></i>
@@ -121,24 +127,41 @@
                     <div class="sidebar-section list-section">
                         <div class="section-header">
                             <h2 class="section-title">
-                                <i data-lucide="folder-open"></i>
-                                <span>Cơ sở tri thức</span>
+                                <i data-lucide="database"></i>
+                                <span>Bộ dữ liệu (Datasets)</span>
                             </h2>
-                            <span class="doc-count-badge" id="docCount">0</span>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <button id="createDatasetBtn" class="header-action-btn" title="Tạo bộ dữ liệu mới" style="background: transparent; border: none; color: var(--accent-secondary); cursor: pointer; display: flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 4px; transition: all 0.2s ease;">
+                                    <i data-lucide="plus-circle" style="width: 15px; height: 15px;"></i>
+                                </button>
+                                <span class="doc-count-badge" id="docCount">0</span>
+                            </div>
                         </div>
                         <div class="document-list" id="documentList">
-                            <!-- Dynamic Document Items will be rendered here -->
+                            <!-- Dynamic Dataset Items will be rendered here -->
                             <div class="empty-docs">
                                 <i data-lucide="inbox"></i>
-                                <p>Chưa có tài liệu nào được tải lên</p>
+                                <p>Chưa có bộ dữ liệu nào</p>
                             </div>
                         </div>
                     </div>
                 </div>
+
             </aside>
 
             <!-- Main Chat Window -->
             <main class="chat-window">
+                <!-- Chat Scope Header Selector -->
+                <div class="chat-scope-bar">
+                    <div class="scope-info">
+                        <i data-lucide="database" class="scope-icon"></i>
+                        <span class="scope-text">Phạm vi tài liệu (Dataset Scope):</span>
+                    </div>
+                    <select id="chatDatasetSelect" class="chat-dataset-select">
+                        <option value="null">Tất cả tài liệu (Default)</option>
+                    </select>
+                </div>
+
                 <div class="messages-container" id="messagesContainer">
                     <!-- Welcome Message -->
                     <div class="message system-msg">

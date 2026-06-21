@@ -10,7 +10,7 @@ class RetrievalService:
     async def search(
             self,
             query: str,
-            dataset_id: str | None = None,
+            dataset_id: str = "null",
             top_k: int = 5, 
             threshold: float = 0.5
     ):

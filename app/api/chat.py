@@ -33,18 +33,22 @@ async def get_chat_service() -> ChatService:
         context_builder_service= context_builder_service
     )
 
+# POST APIs
+
 @router.post("/chat")
 async def chat(
     question: str, 
-    dataset_ids: list[str] | None = None, 
-    conversation_id: str | None = None,
+    dataset_id: str = "null", 
+    conversation_id: str = "null",
     chat_service: ChatService = Depends(get_chat_service)
 ):
-    return await chat_service.generate(question, dataset_ids, conversation_id)
+    return await chat_service.generate(question, dataset_id, conversation_id)
 
 @router.post("/create-conversation")
 async def create_conversation(chat_service: ChatService = Depends(get_chat_service)):
     return await chat_service.create_conversation()
+
+# GET APIs
 
 @router.get("/list-conversation")
 async def list_conversation(chat_service: ChatService = Depends(get_chat_service)):
@@ -53,6 +57,8 @@ async def list_conversation(chat_service: ChatService = Depends(get_chat_service
 @router.get("/get_conversation/{conversation_id}")
 async def get_history_message(conversation_id : str, chat_service : ChatService = Depends(get_chat_service)):
     return await chat_service.get_history_message(conversation_id)
+
+# DELETE APIs
 
 @router.delete("/delete_conversation/{conversation_id}")
 async def delete_conversation(conversation_id : str, chat_service : ChatService = Depends(get_chat_service)):

@@ -97,8 +97,8 @@ class ChatService:
 
     async def generate(
             self, question: str, 
-            dataset_ids: list[str] | None = None, 
-            conversation_id : str | None = None
+            dataset_id: str, 
+            conversation_id : str
         ) -> str:
         history_messages = await self.conversation_service.get_history_message(conversation_id)
         currently_messages = [
@@ -106,7 +106,7 @@ class ChatService:
             ]
         standalone_question = await self._generate_standalone_question(question, currently_messages)
         
-        retrieval_results = await self.retrieval_service.search(query= standalone_question, dataset_ids= dataset_ids)
+        retrieval_results = await self.retrieval_service.search(query= standalone_question, dataset_id= dataset_id)
         if len(retrieval_results) == 0:
             self.prompt = BlankPrompt()
 
@@ -116,7 +116,7 @@ class ChatService:
         prompt = self.prompt.generate_prompt(standalone_question, context, history_context)
         answer = await self.llm_service.generate(prompt)
 
-        if not conversation_id:
+        if conversation_id == "null":
             conversation_id = str(uuid4())
             async def generate_title():
                 title = await self.llm_service.generate(f"Create ONE 4-words title for this question {question}. Do not wrap them in ** **.")

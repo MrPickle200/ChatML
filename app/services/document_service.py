@@ -83,7 +83,7 @@ class DocumentService:
         }
 
 
-    async def upload_document(self, file: UploadFile, dataset_id: str) -> dict:
+    async def upload_document(self, file: UploadFile, dataset_id: str = "null") -> dict:
         await self._validate_file(file)
 
         has_dataset_id = True if dataset_id != "null" else False
@@ -116,7 +116,10 @@ class DocumentService:
 
         except Exception as e:
             await self.repository.delete_document(document_id)
-            await self.storage.delete(document_id)
+            try:
+                self.storage.delete_document(dataset_id, document_id)
+            except Exception:
+                pass
             raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -224,5 +227,20 @@ class DocumentService:
             await self.repository.delete_dataset(dataset_id)
             return {"status" : "ok"}
 
+        except Exception as e:
+            raise HTTPException(status_code= 500, detail= str(e))
+        
+    
+    async def update_dataset(self, dataset_id: str, name: str, description: str) -> dict:
+        update_metadata = dict()
+        if name != "null":
+            update_metadata["name"] = name
+        if description != "null":
+            update_metadata["description"] = description
+        try:
+            if len(update_metadata) > 0:
+                update_metadata["updated_at"] = str(datetime.now(timezone.utc))
+                await self.repository.update_dataset(dataset_id, update_metadata)
+            return {"status" : "ok"}
         except Exception as e:
             raise HTTPException(status_code= 500, detail= str(e))

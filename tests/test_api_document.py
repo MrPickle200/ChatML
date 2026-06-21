@@ -54,31 +54,31 @@ def test_api_update_document():
     mock_doc_service.update_document.assert_called_once()
 
 def test_api_get_document():
-    mock_doc_service.get_by_id = AsyncMock(return_value={"status": "ok", "metadata": {}})
+    mock_doc_service.get_document_by_id = AsyncMock(return_value={"status": "ok", "metadata": {}})
     
-    response = client.get("/document/get-document/123")
+    response = client.get("/document/document/123")
     
     assert response.status_code == 200
     assert response.json() == {"status": "ok", "metadata": {}}
-    mock_doc_service.get_by_id.assert_called_once_with("123")
+    mock_doc_service.get_document_by_id.assert_called_once_with("123")
 
 def test_api_list_document():
     mock_doc_service.list_documents = AsyncMock(return_value={"status": "ok", "list_document": []})
     
-    response = client.get("/document/get-list-document")
+    response = client.get("/document/list-document")
     
     assert response.status_code == 200
     assert response.json() == {"status": "ok", "list_document": []}
     mock_doc_service.list_documents.assert_called_once()
 
 def test_api_delete_document():
-    mock_doc_service.delete = AsyncMock(return_value={"status": "ok", "document_id": "123"})
+    mock_doc_service.delete_document = AsyncMock(return_value={"status": "ok", "document_id": "123"})
     
-    response = client.delete("/document/delete-document/123")
+    response = client.delete("/document/document?document_id=123&dataset_id=456")
     
     assert response.status_code == 200
     assert response.json() == {"status": "ok", "document_id": "123"}
-    mock_doc_service.delete.assert_called_once_with("123")
+    mock_doc_service.delete_document.assert_called_once_with("456", "123")
 
 def test_api_retrieval():
     mock_ret_service.search = AsyncMock(return_value=[
@@ -91,7 +91,7 @@ def test_api_retrieval():
         )
     ])
     
-    response = client.post("/document/retrieval?query=test&threshold=0")
+    response = client.post("/document/retrieval?query=test&threshold=0&dataset_id=ds1")
     
     assert response.status_code == 200
     assert response.json() == [
@@ -103,7 +103,7 @@ def test_api_retrieval():
             "score": 0.9
         }
     ]
-    mock_ret_service.search.assert_called_once_with("test", None, 5, 0.0)
+    mock_ret_service.search.assert_called_once_with("test", "ds1", 5, 0.0)
 
 # Stop patchers when the module finishes (not strictly necessary but clean)
 patcher_st.stop()
@@ -117,3 +117,4 @@ if __name__ == "__main__":
     test_api_delete_document()
     test_api_retrieval()
     print("API router tests passed successfully!")
+

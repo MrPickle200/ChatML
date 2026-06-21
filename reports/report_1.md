@@ -1,4 +1,4 @@
-# Báo cáo Dự án ChatML — Báo cáo Tiến độ & Kết quả Benchmark (report_1)
+# Báo cáo Dự án ChatML — Báo cáo Tiến độ & Kết quả Benchmark 
 
 - **Thời gian cập nhật:** 20/06/2026
 - **Người thực hiện:** Antigravity AI
@@ -8,25 +8,15 @@
 
 ## Phần 1: Cập nhật Tiến độ Phát triển (Từ Thứ Hai đến Hôm Nay)
 
-Trong tuần qua (từ thứ Hai 15/06/2026 đến hôm nay thứ Bảy 20/06/2026), dự án ChatML đã trải qua những cải tiến lớn về cả giao diện người dùng (Frontend), quản lý phiên hội thoại (Database) và tối ưu hóa truy vấn RAG (Core Backend), kết thúc bằng việc tích hợp hệ thống đánh giá hiệu năng (Benchmark).
+Trong tuần qua, dự án ChatML đã trải qua những cải tiến lớn về cả giao diện người dùng (Frontend), quản lý phiên hội thoại (Database) và tối ưu hóa truy vấn RAG (Core Backend), kết thúc bằng việc tích hợp hệ thống đánh giá hiệu năng (Benchmark).
 
-### Sơ đồ Lộ trình Phát triển Tuần qua (15/06 - 20/06)
+### Tóm tắt Lộ trình Phát triển Tuần qua (15/06 - 20/06)
 
-```mermaid
-gantt
-    title Lộ trình phát triển tuần (15/06 - 20/06/2026)
-    dateFormat  YYYY-MM-DD
-    axisFormat %d/%m
-    section Frontend & Storage
-    Giao diện Chat UI & MongoDB Schema          
-    Sidebar hiển thị danh sách hội thoại       
-    section RAG Core Backend
-    Phát triển ContextBuilderService            
-    Tích hợp Rewrite Query (Standalone Q)       
-    section Benchmark System
-    Xây dựng Framework Benchmark & Dataset      
-    Đo lường & Phân tích Latency   
-```
+*   **15/06 - 16/06:** Phát triển Giao diện Chat UI ban đầu và thiết kế Schema lưu trữ trong MongoDB.
+*   **17/06:** Xây dựng thanh bên (Sidebar) hiển thị danh sách và quản lý các cuộc hội thoại.
+*   **18/06:** Triển khai `ContextBuilderService` để tổng hợp lịch sử chat làm ngữ cảnh cho LLM.
+*   **19/06:** Tích hợp tính năng Rewrite Query để tạo câu hỏi độc lập (Standalone Question) từ ngữ cảnh.
+*   **20/06:** Hoàn thiện Framework chấm điểm Benchmark, đo lường độ trễ (Latency) và phân tích các chỉ số đánh giá.
 
 ---
 
@@ -36,46 +26,14 @@ Hệ thống đánh giá benchmark toàn diện đã được triển khai trên
 
 ### 1. Phân tích Luồng Dữ liệu & Độ trễ (RAG Latency Pipeline)
 
-Sơ đồ tuần tự dưới đây biểu diễn chi tiết thời gian xử lý của từng thành phần trong pipeline RAG, được đo lường thực tế trên **30 câu hỏi đại diện** (Task 8):
+Dưới đây là tóm tắt quy trình xử lý và thời gian phản hồi của từng thành phần trong pipeline RAG, được đo lường thực tế trên **30 câu hỏi đại diện**:
 
-```mermaid
-sequenceDiagram
-    autonumber
-    actor User as Người dùng
-    participant API as FastAPI Router
-    participant Service as ChatService
-    participant Embed as EmbeddingService
-    participant Qdrant as Qdrant DB
-    participant Mongo as MongoDB
-    participant LLM as LLM Router (Groq/Gemini)
-    
-    User->>API: POST /chat/chat (Câu hỏi)
-    API->>Service: generate()
-    
-    Note over Service, LLM: 1. Rewrite Câu hỏi (Mất 1 LLM Call)
-    Service->>LLM: generate(standalone_prompt)
-    LLM-->>Service: Standalone Question
-    
-    Note over Service, Qdrant: 2. Retrieval (Trung bình ~108ms)
-    Service->>Embed: embed_text(standalone)
-    Embed-->>Service: Vector nhúng (384-dim)
-    Service->>Qdrant: search(vector, top_k=5)
-    Qdrant-->>Service: Top 5 chunks tương đồng
-    
-    Note over Service, Mongo: 3. Context Building (Trung bình ~0.02ms)
-    Service->>Mongo: get_history_message()
-    Mongo-->>Service: Lịch sử 10 câu chat gần nhất
-    
-    Note over Service, LLM: 4. Generation & Title (LLM Latency trung bình ~11.01s)
-    Service->>LLM: generate(RAG_prompt)
-    LLM-->>Service: Phản hồi cuối cùng (Answer)
-    Service->>LLM: generate(Title_prompt)
-    LLM-->>Service: Tiêu đề hội thoại (4 từ)
-    
-    Service->>Mongo: add_message(User & Bot messages)
-    Service-->>API: ChatResponse
-    API-->>User: Trả về câu trả lời (E2E Latency trung bình ~11.13s)
-```
+1.  **Tiếp nhận yêu cầu:** Người dùng gửi câu hỏi qua API `POST /chat/chat`.
+2.  **Rewrite câu hỏi:** `ChatService` gọi LLM để viết lại câu hỏi dựa vào lịch sử chat để tạo câu hỏi độc lập (Standalone Question).
+3.  **Truy xuất (Retrieval):** Nhúng câu hỏi thông qua `EmbeddingService` thành vector 384 chiều, tìm kiếm top 5 chunks văn bản liên quan nhất trên Qdrant DB (Thời gian xử lý trung bình: ~108ms).
+4.  **Tạo ngữ cảnh (Context Building):** Lấy lịch sử 10 câu chat gần nhất từ MongoDB (Thời gian xử lý trung bình: ~0.02ms).
+5.  **Tạo câu trả lời & Tiêu đề:** Gọi LLM tạo câu trả lời chi tiết và sinh tiêu đề cuộc hội thoại ngắn gọn (Thời gian xử lý LLM trung bình: ~11.01s).
+6.  **Lưu trữ & Phản hồi:** Lưu cuộc hội thoại mới vào MongoDB và trả về phản hồi cuối cùng (Độ trễ toàn trình E2E trung bình: ~11.13s).
 
 ### 2. Bảng chỉ số đo lường chi tiết (Benchmark Metrics)
 
@@ -94,16 +52,46 @@ Dưới đây là các chỉ số chi tiết được ghi nhận từ hệ thố
 | | **E2E Median (Trung vị)** | **11.62s** | Thời gian phản hồi trung vị. |
 | | **E2E P95** | **21.99s** | Độ trễ ở phân vị 95 (bị ảnh hưởng lớn bởi giới hạn API Rate Limit của Groq và thời gian chờ retry). |
 
-### 3. Phân tích Độ trễ từng thành phần (Latency Breakdowns)
+### 3. Phân bổ Thời gian Xử lý Chi tiết (Latency Breakdown)
 
-```mermaid
-barChart
-    title Phân bổ thời gian xử lý trung bình (giây)
-    xlabel "Thành phần hệ thống"
-    ylabel "Độ trễ trung bình (s)"
-    "Tìm kiếm tương đồng (Retrieval)": 0.108
-    "Xây dựng ngữ cảnh (Context)": 0.00002
-    "Thời gian xử lý LLM (LLM Calls)": 11.010
-    "Thời gian phản hồi tổng (E2E)": 11.129
+*   **Tìm kiếm tương đồng (Retrieval):** 0.108 giây (chiếm ~1.0%)
+*   **Xây dựng ngữ cảnh (Context Building):** 0.00002 giây (chiếm ~0.0%)
+*   **Thời gian gọi API LLM (LLM Calls):** 11.010 giây (chiếm ~99.0%)
+*   **Tổng độ trễ phản hồi toàn trình (E2E Latency):** 11.129 giây
+
+---
+
+## Phần 3: Pipeline Xử lý Tài liệu (Document Ingestion Pipeline)
+
+Pipeline xử lý tài liệu của ChatML chịu trách nhiệm tiếp nhận tài liệu học tập thô, chuyển đổi văn bản thành các vector nhúng ngữ nghĩa (embeddings) và lưu trữ vào Vector Database để làm cơ sở tri thức cho chatbot. Quy trình chi tiết gồm 5 bước chính:
+
+```
+[Tài liệu Thô] (.pdf, .docx, .txt, .md)
+       │
+       ▼
+1. [Trích xuất Văn bản (Parsing)] (Đọc văn bản & siêu dữ liệu từ tệp)
+       │
+       ▼
+2. [Phân đoạn (Chunking)] (Cắt văn bản thô: Size=500, Overlap=100)
+       │
+       ▼
+3. [Vector hóa (Embedding)] (Chuyển văn bản thành Vector 384 chiều)
+       │
+       ▼
+4. [Lưu trữ Qdrant] (Lưu Vector và chunk text làm Collection)
+       │
+       ▼
+5. [Lưu trữ MongoDB] (Lưu siêu dữ liệu tài liệu & ID liên kết Dataset)
 ```
 
+1.  **Tiếp nhận & Kiểm tra định dạng (Validation):**
+    Tài liệu được tải lên thông qua API `/document/upload-document`. Hệ thống chỉ cho phép các định dạng `.pdf`, `.docx`, `.txt`, `.md` với kích thước tệp tối đa 50MB. Sau khi vượt qua kiểm tra, tệp được lưu vào thư mục lưu trữ cục bộ (`LocalStorage`).
+2.  **Trích xuất văn bản thô (Parsing Service):**
+    Dịch vụ `ParsingService` phân tích cấu trúc của từng loại tệp và trích xuất nội dung văn bản thuần túy cùng với các thông số cấu trúc cơ bản.
+3.  **Cắt phân đoạn văn bản (Chunking Service):**
+    Đoạn văn bản dài được `ChunkingService` phân tách thành các đoạn nhỏ (chunks) độc lập. Thuật toán sử dụng **Chunk Size = 500 ký tự** và **Chunk Overlap = 100 ký tự**. Việc thiết lập overlap đảm bảo ngữ cảnh ở ranh giới giữa hai đoạn không bị mất mát hoặc đứt gãy thông tin.
+4.  **Nhúng Vector ngữ nghĩa (Embedding Service):**
+    Mỗi chunk văn bản được gửi qua `EmbeddingService` để biểu diễn dưới dạng một vector số thực gồm 384 chiều. Quá trình này sử dụng mô hình nhúng cục bộ `BAAI/bge-small-en-v1.5`, giúp chuyển đổi ý nghĩa ngữ nghĩa của câu chữ thành vị trí trong không gian vector.
+5.  **Lưu trữ đồng bộ:**
+    *   **Qdrant Vector Database:** Lưu trữ các vector 384 chiều kèm nội dung text tương ứng (payload) vào collection `document_chunks` để phục vụ tìm kiếm tương đồng.
+    *   **MongoDB:** Lưu trữ metadata của tài liệu (tên tệp, dung lượng, phiên bản, ngày tạo, đường dẫn đĩa vật lý và `dataset_id`) để quản lý tệp trên giao diện và phân loại theo các bộ dữ liệu.

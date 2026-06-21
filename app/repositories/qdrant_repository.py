@@ -45,7 +45,7 @@ class QdrantRepository:
             threshold: float
     ):
         query_filter = None
-        if not dataset_id == "null":
+        if dataset_id != "null":
             query_filter = Filter(
                 must=[
                     FieldCondition(
