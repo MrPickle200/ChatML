@@ -34,8 +34,13 @@ class LocalStorage:
 
         return pth_to_save
 
-    def delete(self, document_id: str):
-        pth = self.base_dir / document_id
+    def delete_document(self, dataset_id: str, document_id: str):
+        pth = self.base_dir / dataset_id / document_id
         if not pth.exists():
             raise FileNotFoundError(f"Directory not found: {pth}")
         shutil.rmtree(pth)
+
+    def delete_dataset(self, dataset_id: str):
+        pth = self.base_dir / dataset_id
+        if pth.exists():
+            shutil.rmtree(pth)

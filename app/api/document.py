@@ -82,7 +82,7 @@ async def get_document(
     document_id: str,
     service: DocumentService = Depends(get_document_service)
 ):
-    return await service.get_by_id(document_id)
+    return await service.get_document_by_id(document_id)
 
 
 @router.get("/list-document")
@@ -101,12 +101,13 @@ async def get_document_by_dataset(dataset_id: str, service: DocumentService = De
 
 # DELETE APIs
 
-@router.delete("/document/{document_id}")
+@router.delete("/document")
 async def delete_document(
     document_id: str,
+    dataset_id: str,
     service: DocumentService = Depends(get_document_service)
 ):
-    return await service.delete(document_id)
+    return await service.delete_document(dataset_id, document_id)
 
 
 @router.delete("/dataset/{dataset_id}")

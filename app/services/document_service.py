@@ -83,11 +83,11 @@ class DocumentService:
         }
 
 
-    async def upload_document(self, file: UploadFile, dataset_id: str | None = None) -> dict:
+    async def upload_document(self, file: UploadFile, dataset_id: str) -> dict:
         await self._validate_file(file)
 
-        has_dataset_id = True if dataset_id else False
-        if not dataset_id:
+        has_dataset_id = True if dataset_id != "null" else False
+        if not has_dataset_id:
             dataset_id = str(uuid.uuid4())
         document_id = str(uuid.uuid4())
 
@@ -173,13 +173,9 @@ class DocumentService:
         return {"status": "ok", "list_document": docs}
 
 
-    async def delete_document(self, document_id: str) -> dict:
-        doc = await self.repository.find_document_by_id(document_id)
-        if not doc:
-            raise HTTPException(status_code=404, detail="Document not found")
-
+    async def delete_document(self, dataset_id: str, document_id: str) -> dict:
         try:
-            self.storage.delete(document_id)
+            self.storage.delete_document(dataset_id, document_id)
             await self.repository.delete_document(document_id)
             await self.ingestion.delete_document(document_id)
         except FileNotFoundError:
@@ -218,11 +214,13 @@ class DocumentService:
             raise HTTPException(status_code= 500, detail= str(e))
         
 
-    async def delete_dataset(self, dataset_id) -> dict:
+    async def delete_dataset(self, dataset_id: str) -> dict:
         try:
             documents = await self.repository.find_document_by_dataset_id(dataset_id)
-            for document in documents:
-                await self.delete_document(document_id= document["_id"])
+            if documents:
+                for document in documents:
+                    await self.delete_document(document_id= document["_id"], dataset_id= dataset_id)
+            self.storage.delete_dataset(dataset_id)
             await self.repository.delete_dataset(dataset_id)
             return {"status" : "ok"}
 
