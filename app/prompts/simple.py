@@ -5,11 +5,16 @@ class SimplePrompt(BasePrompt):
         super().__init__()
     
     def generate_prompt(self, question: str, context: str, history_context: str | None = None) -> str:
+        topics = ["Math", "Machine Learning", "Marketing"]
         prompt = f"""
             === SYSTEM ===
-            You are an AI Learning Assistant.
+            You are an AI Learning Assistant for {topics}.
 
             Use the provided context to answer.
+
+            === PROVIDED TOPIC ===
+            Topics
+            {topics}
 
             === CONVERSATION HISTORY ===
             Conversation history:
@@ -18,6 +23,8 @@ class SimplePrompt(BasePrompt):
             === CURRENT QUESTION ===
             Question:
             {question}
+
+            If current question is not in provided topics, return: Current question is not in supported topics
 
             === RETRIEVED KNOWLEDGE ===
             Context:
