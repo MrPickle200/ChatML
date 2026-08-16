@@ -34,6 +34,30 @@ def test_embedding_service():
         assert embs == [[0.1, 0.2, 0.3], [0.4, 0.5, 0.6]]
         mock_model.encode.assert_called_with(["hello", "world"], normalize_embeddings=True)
 
+def test_sparse_embedding_service():
+    from app.services.embedding_service import SparseEmbeddingService
+    from qdrant_client.models import SparseVector
+    
+    service = SparseEmbeddingService()
+    
+    # Test tokenization
+    tokens = service._tokenize("Hello, World!")
+    assert tokens == ["hello", "world"]
+    
+    # Test single text embedding
+    sparse_vec = service.embed_text("Hello, World! Hello")
+    assert isinstance(sparse_vec, SparseVector)
+    assert len(sparse_vec.indices) == 2
+    assert len(sparse_vec.values) == 2
+    # Verify indices are sorted
+    assert sparse_vec.indices[0] <= sparse_vec.indices[1]
+    
+    # Test multiple texts embedding
+    sparse_vecs = service.embed_texts(["Hello", "World"])
+    assert len(sparse_vecs) == 2
+    assert isinstance(sparse_vecs[0], SparseVector)
+
 if __name__ == "__main__":
     test_embedding_service()
+    test_sparse_embedding_service()
     print("EmbeddingService tests passed successfully!")

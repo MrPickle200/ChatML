@@ -88,7 +88,17 @@ async def update_dataset(
 
 # GET APIs
 
-@router.get("/document/{document_id}")
+# --- CODE CŨ (Được comment lại để sửa lỗi 404 Not Found) ---
+# @router.get("/document/{document_id}")
+# async def get_document(
+#     document_id: str,
+#     service: DocumentService = Depends(get_document_service)
+# ):
+#     return await service.get_document_by_id(document_id)
+# -----------------------------------------------------------
+
+# NEW: Sửa lại route khớp với frontend (/document/get-document/{document_id}) và README.md
+@router.get("/get-document/{document_id}")
 async def get_document(
     document_id: str,
     service: DocumentService = Depends(get_document_service)

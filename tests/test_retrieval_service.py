@@ -26,7 +26,13 @@ def test_retrieval_search_success():
         results = await service.search("hello query", dataset_id="ds1", top_k=3, threshold=0.6)
         
         mock_embedding.embed_text.assert_called_once_with("hello query")
-        mock_qdrant.search.assert_called_once_with([0.1, 0.2, 0.3], 3, "ds1", 0.6)
+        mock_qdrant.search.assert_called_once()
+        kwargs = mock_qdrant.search.call_args.kwargs
+        assert kwargs["query_vector"] == [0.1, 0.2, 0.3]
+        assert kwargs["top_k"] == 3
+        assert kwargs["dataset_id"] == "ds1"
+        assert kwargs["threshold"] == 0.6
+        assert "sparse_query_vector" in kwargs
         assert len(results) == 1
         assert results[0].chunk_id == "c1"
         assert results[0].document_id == "d1"

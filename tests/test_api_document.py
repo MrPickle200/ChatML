@@ -56,7 +56,9 @@ def test_api_update_document():
 def test_api_get_document():
     mock_doc_service.get_document_by_id = AsyncMock(return_value={"status": "ok", "metadata": {}})
     
-    response = client.get("/document/document/123")
+    # CODE CŨ (Được comment lại)
+    # response = client.get("/document/document/123")
+    response = client.get("/document/get-document/123")
     
     assert response.status_code == 200
     assert response.json() == {"status": "ok", "metadata": {}}

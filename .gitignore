@@ -2,3 +2,5 @@ __pycache__/
 data/
 .pytest_cache/
 .env
+TASK.md
+tests/

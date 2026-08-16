@@ -59,7 +59,8 @@ def test_ingest_document():
         points_arg = mock_qdrant.upsert_points.call_args[0][0]
         assert len(points_arg) == 2
         assert points_arg[0].id == "chunk1"
-        assert points_arg[0].vector == [0.1, 0.2]
+        assert points_arg[0].vector["dense"] == [0.1, 0.2]
+        assert "sparse" in points_arg[0].vector
         assert points_arg[0].payload["dataset_id"] == "dataset123"
         assert points_arg[0].payload["document_id"] == "doc1"
         assert points_arg[0].payload["chunk_text"] == "Line 1"
