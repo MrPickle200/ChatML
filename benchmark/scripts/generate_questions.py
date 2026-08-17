@@ -2,9 +2,9 @@ import os
 import json
 import asyncio
 import re
-from app.llm.groq import GroqModel
+from app.llm.llm_router import LLMRouter
 
-async def generate_question_for_chunk(router: GroqModel, chunk: dict, max_retries=3) -> dict | None:
+async def generate_question_for_chunk(router: LLMRouter, chunk: dict, max_retries=3) -> dict | None:
     chunk_text = chunk["text"]
     chunk_id = chunk["chunk_id"]
     document_id = chunk["document_id"]
@@ -64,7 +64,7 @@ async def main():
         
     print(f"Found {len(docs)} documents.")
     
-    router = GroqModel()
+    router = LLMRouter()
     candidate_questions = []
     
     # We want 100 questions. 4 documents, so 25 questions per document.

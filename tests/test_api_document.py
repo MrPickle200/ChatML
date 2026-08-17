@@ -1,8 +1,10 @@
 from unittest.mock import patch, MagicMock, AsyncMock
 
-# Patch SentenceTransformer immediately before any app imports to prevent downloading model
-patcher_st = patch("sentence_transformers.SentenceTransformer")
-mock_st_class = patcher_st.start()
+# Patch NVIDIA embeddings before app imports so tests never call a live endpoint.
+patcher_env = patch.dict("os.environ", {"NVIDIA_API_KEY": "test-key"})
+patcher_env.start()
+patcher_embeddings = patch("app.services.embedding_service.NVIDIAEmbeddings")
+mock_embeddings_class = patcher_embeddings.start()
 
 # Also patch AsyncQdrantClient and AsyncIOMotorClient just in case they attempt connections during setup
 patcher_qdrant = patch("qdrant_client.AsyncQdrantClient")
@@ -28,6 +30,14 @@ app.dependency_overrides[get_document_service] = override_get_document_service
 app.dependency_overrides[get_retrieval_service] = override_get_retrieval_service
 
 client = TestClient(app)
+
+
+def test_web_root_serves_frontend():
+    response = client.get("/web/")
+
+    assert response.status_code == 200
+    assert 'app.js?v=20260817-1' in response.text
+
 
 def test_api_upload_document():
     mock_doc_service.upload_document = AsyncMock(return_value={"status": "ok", "document_id": "123"})
@@ -108,7 +118,8 @@ def test_api_retrieval():
     mock_ret_service.search.assert_called_once_with("test", "ds1", 5, 0.0)
 
 # Stop patchers when the module finishes (not strictly necessary but clean)
-patcher_st.stop()
+patcher_embeddings.stop()
+patcher_env.stop()
 patcher_qdrant.stop()
 
 if __name__ == "__main__":
@@ -119,4 +130,3 @@ if __name__ == "__main__":
     test_api_delete_document()
     test_api_retrieval()
     print("API router tests passed successfully!")
-

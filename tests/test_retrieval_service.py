@@ -7,7 +7,7 @@ from app.models.retrieved_chunk import RetrievedChunk
 
 def test_retrieval_search_success():
     mock_embedding = MagicMock()
-    mock_embedding.embed_text.return_value = [0.1, 0.2, 0.3]
+    mock_embedding.embed_text = AsyncMock(return_value=[0.1, 0.2, 0.3])
 
     mock_qdrant = MagicMock()
     mock_qdrant.search = AsyncMock(return_value=[
@@ -25,7 +25,7 @@ def test_retrieval_search_success():
     async def run_test():
         results = await service.search("hello query", dataset_id="ds1", top_k=3, threshold=0.6)
         
-        mock_embedding.embed_text.assert_called_once_with("hello query")
+        mock_embedding.embed_text.assert_awaited_once_with("hello query")
         mock_qdrant.search.assert_called_once()
         kwargs = mock_qdrant.search.call_args.kwargs
         assert kwargs["query_vector"] == [0.1, 0.2, 0.3]
@@ -44,7 +44,7 @@ def test_retrieval_search_success():
 
 def test_retrieval_search_failure():
     mock_embedding = MagicMock()
-    mock_embedding.embed_text.side_effect = Exception("Embedding failed")
+    mock_embedding.embed_text = AsyncMock(side_effect=Exception("Embedding failed"))
     mock_qdrant = MagicMock()
 
     service = RetrievalService(mock_embedding, mock_qdrant)

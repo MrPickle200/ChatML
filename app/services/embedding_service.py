@@ -1,23 +1,54 @@
-from app.core.config import settings
-from sentence_transformers import SentenceTransformer
-import re
-import math
 import hashlib
+import math
+import os
+import re
+
+from dotenv import load_dotenv
+from langchain_nvidia_ai_endpoints import NVIDIAEmbeddings
 from qdrant_client.models import SparseVector
 
+from app.core.config import settings
+
+
 class EmbeddingService:
-    def __init__(self):
-        self.model: SentenceTransformer = SentenceTransformer(settings.embedding_model)
+    def __init__(
+        self,
+        model: str | None = None,
+        vector_size: int | None = None,
+    ) -> None:
+        load_dotenv()
+        api_key = os.getenv("NVIDIA_API_KEY")
+        if not api_key:
+            raise ValueError("Missing NVIDIA_API_KEY in environment variables")
+
+        self.model_name = model or settings.embedding_model
+        self._vector_size = vector_size or settings.qdrant_vector_size
+
+        try:
+            self.client = NVIDIAEmbeddings(
+                model=self.model_name,
+                api_key=api_key,
+            )
+        except Exception:
+            raise RuntimeError(
+                f"Failed to initialize NVIDIA embedding model '{self.model_name}'."
+            ) from None
 
     @property
     def vector_size(self) -> int:
-        return self.model.get_embedding_dimension()
+        return self._vector_size
 
-    def embed_text(self, text: str) -> list[float]:
-        return self.model.encode(text, normalize_embeddings= True).tolist()
-    
-    def embed_texts(self, texts: list[str]) -> list[list[float]]:
-        return self.model.encode(texts, normalize_embeddings= True).tolist()
+    async def embed_text(self, text: str) -> list[float]:
+        try:
+            return await self.client.aembed_query(text)
+        except Exception:
+            raise RuntimeError("NVIDIA query embedding request failed.") from None
+
+    async def embed_texts(self, texts: list[str]) -> list[list[float]]:
+        try:
+            return await self.client.aembed_documents(texts)
+        except Exception:
+            raise RuntimeError("NVIDIA document embedding request failed.") from None
 
 
 # NEW: SparseEmbeddingService for generating sparse vectors to support Hybrid Search

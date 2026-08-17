@@ -20,10 +20,10 @@ def test_ingest_document():
     ]
     
     mock_embedding = MagicMock()
-    mock_embedding.embed_texts.return_value = [
+    mock_embedding.embed_texts = AsyncMock(return_value=[
         [0.1, 0.2],
         [0.3, 0.4]
-    ]
+    ])
     
     mock_qdrant = MagicMock()
     mock_qdrant.upsert_points = AsyncMock()
@@ -52,7 +52,7 @@ def test_ingest_document():
         # Verify dependencies were called correctly
         mock_parsing.parse.assert_called_once_with("dummy_path/doc.pdf")
         mock_chunking.chunk_text.assert_called_once_with("Line 1\nLine 2", "doc1")
-        mock_embedding.embed_texts.assert_called_once_with(["Line 1", "Line 2"])
+        mock_embedding.embed_texts.assert_awaited_once_with(["Line 1", "Line 2"])
         
         # Verify upsert was called
         mock_qdrant.upsert_points.assert_called_once()
@@ -93,7 +93,7 @@ def test_update_document():
     mock_chunking = MagicMock()
     mock_chunking.chunk_text.return_value = []
     mock_embedding = MagicMock()
-    mock_embedding.embed_texts.return_value = []
+    mock_embedding.embed_texts = AsyncMock(return_value=[])
     
     mock_qdrant = MagicMock()
     mock_qdrant.delete_by_document_id = AsyncMock()

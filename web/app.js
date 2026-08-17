@@ -1,21 +1,20 @@
 document.addEventListener('DOMContentLoaded', () => {
     // Configure Marked with KaTeX extension
-    if (typeof markedKatex !== 'undefined') {
-        marked.use(markedKatex({
-            throwOnError: false,
-            nonStandard: true
-        }));
-    } else if (window.markedKatex) {
-        marked.use(window.markedKatex({
+    if (window.marked?.use && typeof window.markedKatex === 'function') {
+        window.marked.use(window.markedKatex({
             throwOnError: false,
             nonStandard: true
         }));
     }
 
     // API Configurations
-    const API_BASE_URL = 'http://localhost:8000';
+    const API_BASE_URL = (window.CHATML_API_BASE_URL || window.location.origin).replace(/\/$/, '');
     let isServerOnline = false;
     const documentNameCache = {};
+
+    function refreshIcons() {
+        window.lucide?.createIcons?.();
+    }
     
     // DOM Selectors
     const chatInput = document.getElementById('chatInput');
@@ -51,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentConversationId = null;
 
     // Initialize Lucide Icons
-    lucide.createIcons();
+    refreshIcons();
 
     // Auto-resize textarea as user types
     chatInput.addEventListener('input', function() {
@@ -106,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             </div>
         `;
-        lucide.createIcons();
+        refreshIcons();
     }
 
     // Check Backend Server Status
@@ -197,7 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <p>Chưa có bộ dữ liệu nào.<br>Bấm nút (+) ở trên để tạo mới!</p>
                     </div>
                 `;
-                lucide.createIcons();
+                refreshIcons();
                 return;
             }
 
@@ -249,7 +248,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             });
 
-            lucide.createIcons();
+            refreshIcons();
         } catch (error) {
             console.error('Error fetching datasets:', error);
             documentList.innerHTML = `
@@ -258,7 +257,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <p>Lỗi tải danh sách bộ dữ liệu</p>
                 </div>
             `;
-            lucide.createIcons();
+            refreshIcons();
         }
     }
 
@@ -279,7 +278,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <p>Chưa có cuộc trò chuyện nào.<br>Bấm nút trên để tạo mới!</p>
                     </div>
                 `;
-                lucide.createIcons();
+                refreshIcons();
                 return;
             }
 
@@ -336,7 +335,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             });
 
-            lucide.createIcons();
+            refreshIcons();
         } catch (error) {
             console.error('Error fetching conversations:', error);
             conversationList.innerHTML = `
@@ -345,7 +344,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <p>Lỗi tải danh sách hội thoại</p>
                 </div>
             `;
-            lucide.createIcons();
+            refreshIcons();
         }
     }
 
@@ -375,7 +374,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <p>Đang tải lịch sử hội thoại...</p>
             </div>
         `;
-        lucide.createIcons();
+        refreshIcons();
 
         try {
             const response = await fetch(`${API_BASE_URL}/chat/get_conversation/${conversationId}`);
@@ -448,7 +447,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             `;
             document.getElementById('retryLoadConvBtn')?.addEventListener('click', () => handleSelectConversation(conversationId));
-            lucide.createIcons();
+            refreshIcons();
         }
     }
 
@@ -796,7 +795,7 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
         
         messagesContainer.appendChild(messageDiv);
-        lucide.createIcons();
+        refreshIcons();
     }
 
     // Helper: Append Bot Loading Bubble
@@ -822,7 +821,7 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
         
         messagesContainer.appendChild(messageDiv);
-        lucide.createIcons();
+        refreshIcons();
     }
 
     // Helper: Render Response in Bot Bubble
@@ -833,8 +832,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const contentDiv = botBubble.querySelector('.message-content');
         
         // Parse markdown to HTML
-        let parsedHtml = marked.parse(markdownText);
-        contentDiv.innerHTML = parsedHtml;
+        if (window.marked?.parse) {
+            contentDiv.innerHTML = window.marked.parse(markdownText);
+        } else {
+            contentDiv.textContent = markdownText;
+        }
 
         // Render sources/citations if present
         if (sources && sources.length > 0) {
@@ -894,10 +896,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Apply syntax highlighting
-        Prism.highlightAllUnder(contentDiv);
+        window.Prism?.highlightAllUnder?.(contentDiv);
         
         // Re-run Lucide icons for new badges/icons
-        lucide.createIcons();
+        refreshIcons();
     }
 
     // Helper: Render Error in Bot Bubble
@@ -919,7 +921,7 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         `;
         
-        lucide.createIcons();
+        refreshIcons();
     }
 
     // Helper: Escape HTML to prevent XSS
@@ -1103,6 +1105,6 @@ document.addEventListener('DOMContentLoaded', () => {
         
         docContainer.classList.toggle('collapsed');
         itemContainer.classList.toggle('expanded');
-        lucide.createIcons();
+        refreshIcons();
     };
 });

@@ -62,6 +62,9 @@ class ChatService:
         return metadata
 
     async def _generate_standalone_question(self, question : str, currently_messages : list):
+        if not currently_messages:
+            return question
+
         prompt = f"""
             === SYSTEM ===
             Your task is to use conversation history to resolve current question into a standalone question, 
@@ -74,6 +77,11 @@ class ChatService:
             {question}
         """
         return await self.llm_service.generate(prompt) 
+
+    @staticmethod
+    def _build_conversation_title(question: str) -> str:
+        words = question.strip().split()
+        return " ".join(words[:4]) or "New conversation"
     
     async def create_conversation(self, conversation_id : str | None = None, title : str | None = None):
         if not conversation_id:
@@ -118,10 +126,8 @@ class ChatService:
 
         if conversation_id == "null":
             conversation_id = str(uuid4())
-            async def generate_title():
-                title = await self.llm_service.generate(f"Create ONE 4-words title for this question {question}. Do not wrap them in ** **.")
-                await self.create_conversation(conversation_id, title)
-            db_tasks = [generate_title()]
+            title = self._build_conversation_title(question)
+            db_tasks = [self.create_conversation(conversation_id, title)]
         else:
             db_tasks = []
 
@@ -144,4 +150,3 @@ class ChatService:
         return await self.conversation_service.delete_conversation(conversation_id)
     
 
-        

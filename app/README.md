@@ -1,6 +1,6 @@
 # ChatML Backend
 
-This is the FastAPI backend service for ChatML, orchestrating document ingestion, chunking, vector embedding, and context-aware chat generation using Google Gemini.
+This is the FastAPI backend service for ChatML, orchestrating document ingestion, chunking, vector embedding, and context-aware chat generation using NVIDIA AI Endpoints.
 
 ## 🛠️ Key Components & Technologies
 * **Framework:** [FastAPI](https://fastapi.tiangolo.com/) for building APIs.
@@ -8,8 +8,7 @@ This is the FastAPI backend service for ChatML, orchestrating document ingestion
   * [MongoDB](https://www.mongodb.com/) (via motor) for document metadata storage.
   * [Qdrant](https://qdrant.tech/) for vector search retrieval.
 * **AI & NLP:**
-  * [Sentence-Transformers](https://sbert.net/) (`BAAI/bge-small-en-v1.5`) for local vector embeddings.
-  * [Google Gemini API](https://ai.google.dev/) (`gemini-2.5-flash-lite`) for context-aware Q&A.
+  * [NVIDIA AI Endpoints](https://build.nvidia.com/) through LangChain for hosted `nv-embedqa-e5-v5` embeddings and context-aware Q&A with model fallback.
   * [LangChain](https://python.langchain.com/) (`RecursiveCharacterTextSplitter`) for smart text chunking.
   * [Unstructured](https://unstructured.io/) for parsing `.pdf`, `.docx`, `.txt`, and `.md` files.
 
@@ -18,19 +17,28 @@ This is the FastAPI backend service for ChatML, orchestrating document ingestion
 ## ⚙️ Setup & Execution
 
 ### 1. Prerequisites & Environment
-Ensure you have Python 3.10+ and Docker. Define a `.env` in the project root:
+Ensure you have Python 3.11+ and Docker. Copy `.env.example` to `.env` and configure it:
 ```env
 MONGODB_URI=mongodb://localhost:27017
 MONGODB_DATABASE=chatml
 QDRANT_HOST=localhost
 QDRANT_PORT=6333
 QDRANT_COLLECTION_NAME=document_chunks
-QDRANT_VECTOR_SIZE=384
+QDRANT_VECTOR_SIZE=1024
 CHUNK_SIZE=500
 CHUNK_OVERLAP=100
-EMBEDDING_MODEL=BAAI/bge-small-en-v1.5
-GEMINI=your_gemini_api_key
+EMBEDDING_MODEL=nvidia/nv-embedqa-e5-v5
+NVIDIA_API_KEY=your_key_here
 ```
+
+Set the optional comma-separated `NVIDIA_MODELS` value to customize the fallback order.
+The default low-latency order is `meta/llama-3.1-8b-instruct`, followed by
+`nvidia/nemotron-mini-4b-instruct`.
+
+The configured embedding model returns 1024-dimensional vectors. Recreate and
+re-ingest any existing Qdrant collection that was created with another dense-vector
+size after backing up any required data; this migration does not re-embed stored
+vectors automatically.
 
 ### 2. Run Database Services
 ```bash

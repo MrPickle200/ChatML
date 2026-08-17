@@ -6,7 +6,7 @@ ChatML is a Retrieval-Augmented Generation (RAG) assistant designed to help user
 
 ## 🛠️ Project Structure
 
-* **[app/](app/) (Backend Service):** Built with FastAPI, MongoDB, Qdrant, and Google Gemini API. Manages ingestion, chunking, local vector embedding (`sentence-transformers`), and retrieval. See [app/README.md](app/README.md) for backend details.
+* **[app/](app/) (Backend Service):** Built with FastAPI, MongoDB, Qdrant, and NVIDIA AI Endpoints. Manages ingestion, chunking, hosted NVIDIA embeddings, and retrieval. See [app/README.md](app/README.md) for backend details.
 * **[web/](web/) (Frontend Web UI):** A single-page application (SPA) with a modern dark theme and glassmorphism for document management and chat. See [web/README.md](web/README.md) for UI details.
 * **[docs/](docs/) (Architecture & Design):** Contains workflow diagrams and technical specifications.
 * **[tests/](tests/) (Unit Tests):** Offline unit testing suite for all services and routers.
@@ -16,7 +16,7 @@ ChatML is a Retrieval-Augmented Generation (RAG) assistant designed to help user
 ## ⚡ Quick Start
 
 ### 1. Configure Environment
-Create a `.env` file in the root directory:
+Copy `.env.example` to `.env`, then set the NVIDIA API key:
 ```env
 MONGODB_URI=mongodb://localhost:27017
 MONGODB_DATABASE=chatml
@@ -24,14 +24,22 @@ MONGODB_DATABASE=chatml
 QDRANT_HOST=localhost
 QDRANT_PORT=6333
 QDRANT_COLLECTION_NAME=document_chunks
-QDRANT_VECTOR_SIZE=384
+QDRANT_VECTOR_SIZE=1024
 
 CHUNK_SIZE=500
 CHUNK_OVERLAP=100
 
-EMBEDDING_MODEL=BAAI/bge-small-en-v1.5
-GEMINI=your_gemini_api_key
+EMBEDDING_MODEL=nvidia/nv-embedqa-e5-v5
+NVIDIA_API_KEY=your_key_here
 ```
+
+The optional comma-separated `NVIDIA_MODELS` value controls the model fallback order.
+The default order prioritizes `meta/llama-3.1-8b-instruct`, then falls back to
+`nvidia/nemotron-mini-4b-instruct` for low-latency responses.
+
+`nv-embedqa-e5-v5` produces 1024-dimensional vectors. Existing collections created
+with a different dense-vector size must be recreated and their documents re-ingested.
+Back up any required data first; this migration does not re-embed stored vectors.
 
 ### 2. Launch Databases
 Ensure Docker is running, then start MongoDB and Qdrant:

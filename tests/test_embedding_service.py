@@ -1,38 +1,52 @@
-from unittest.mock import patch, MagicMock
-import numpy as np
+import asyncio
+from unittest.mock import AsyncMock, MagicMock, patch
+
+import pytest
+
 from app.services.embedding_service import EmbeddingService
 
-def test_embedding_service():
-    # Mock SentenceTransformer
-    mock_model = MagicMock()
-    mock_model.get_embedding_dimension.return_value = 384
-    
-    # mock encode for single text return a numpy array
-    dummy_vector = np.array([0.1, 0.2, 0.3])
-    dummy_vectors = np.array([[0.1, 0.2, 0.3], [0.4, 0.5, 0.6]])
-    
-    def mock_encode(texts, normalize_embeddings=True):
-        if isinstance(texts, str):
-            return dummy_vector
-        return dummy_vectors
 
-    mock_model.encode.side_effect = mock_encode
+def test_embedding_service_requires_api_key(monkeypatch):
+    monkeypatch.delenv("NVIDIA_API_KEY", raising=False)
 
-    with patch("app.services.embedding_service.SentenceTransformer", return_value=mock_model):
-        service = EmbeddingService()
-        
-        # Verify vector size
-        assert service.vector_size == 384
-        
-        # Verify single text embedding
-        emb = service.embed_text("hello")
-        assert emb == [0.1, 0.2, 0.3]
-        mock_model.encode.assert_called_with("hello", normalize_embeddings=True)
-        
-        # Verify multiple texts embedding
-        embs = service.embed_texts(["hello", "world"])
-        assert embs == [[0.1, 0.2, 0.3], [0.4, 0.5, 0.6]]
-        mock_model.encode.assert_called_with(["hello", "world"], normalize_embeddings=True)
+    with patch("app.services.embedding_service.load_dotenv"):
+        with pytest.raises(ValueError, match="NVIDIA_API_KEY"):
+            EmbeddingService()
+
+
+def test_embedding_service_uses_nvidia_async_api(monkeypatch):
+    monkeypatch.setenv("NVIDIA_API_KEY", "test-key")
+    mock_client = MagicMock()
+    mock_client.aembed_query = AsyncMock(return_value=[0.1, 0.2, 0.3])
+    mock_client.aembed_documents = AsyncMock(
+        return_value=[[0.1, 0.2], [0.3, 0.4]]
+    )
+
+    with patch(
+        "app.services.embedding_service.NVIDIAEmbeddings",
+        return_value=mock_client,
+    ) as nvidia_embeddings:
+        service = EmbeddingService(
+            model="nvidia/nv-embedqa-e5-v5",
+            vector_size=1024,
+        )
+
+    nvidia_embeddings.assert_called_once_with(
+        model="nvidia/nv-embedqa-e5-v5",
+        api_key="test-key",
+    )
+    assert service.vector_size == 1024
+
+    async def run_test():
+        assert await service.embed_text("hello") == [0.1, 0.2, 0.3]
+        assert await service.embed_texts(["hello", "world"]) == [
+            [0.1, 0.2],
+            [0.3, 0.4],
+        ]
+
+    asyncio.run(run_test())
+    mock_client.aembed_query.assert_awaited_once_with("hello")
+    mock_client.aembed_documents.assert_awaited_once_with(["hello", "world"])
 
 def test_sparse_embedding_service():
     from app.services.embedding_service import SparseEmbeddingService

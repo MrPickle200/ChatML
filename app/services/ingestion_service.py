@@ -101,7 +101,9 @@ class IngestionService:
         chunks = self.chunking_service.chunk_text(texts, document_id)
         
         # Sinh dense vectors
-        dense_vectors = self.embedding_service.embed_texts([chunk.chunk_text for chunk in chunks])
+        dense_vectors = await self.embedding_service.embed_texts(
+            [chunk.chunk_text for chunk in chunks]
+        )
         # Sinh sparse vectors
         sparse_vectors = self.sparse_embedding_service.embed_texts([chunk.chunk_text for chunk in chunks])
 
@@ -124,4 +126,3 @@ class IngestionService:
         document_id = document.document_id
         await self.delete_document(document_id)
         await self.ingest_document(document)
-        

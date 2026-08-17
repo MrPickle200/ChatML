@@ -59,10 +59,9 @@ def test_chat_service_generate_success_with_results():
     ])
     
     mock_llm_service = MagicMock()
-    mock_llm_service.generate = AsyncMock(side_effect=[
-        "standalone: What is this?",
-        "This is the generated answer."
-    ])
+    mock_llm_service.generate = AsyncMock(
+        return_value="This is the generated answer."
+    )
     
     mock_prompt = MagicMock()
     mock_prompt.generate_prompt.return_value = "Mocked full prompt text"
@@ -92,13 +91,13 @@ def test_chat_service_generate_success_with_results():
         assert len(response.sources) == 2
         
         # Verify retrieval service call
-        mock_retrieval_service.search.assert_called_once_with(query="standalone: What is this?", dataset_id="ds1")
+        mock_retrieval_service.search.assert_called_once_with(query="What is this?", dataset_id="ds1")
         
         # Verify prompt generation
-        mock_prompt.generate_prompt.assert_called_once_with("standalone: What is this?", "hello\nworld", "history context")
+        mock_prompt.generate_prompt.assert_called_once_with("What is this?", "hello\nworld", "history context")
         
         # Verify LLM generation calls
-        assert mock_llm_service.generate.call_count == 2
+        assert mock_llm_service.generate.call_count == 1
         
         # Verify original prompt was not replaced
         assert service.prompt == mock_prompt
@@ -110,10 +109,7 @@ def test_chat_service_generate_empty_results():
     mock_retrieval_service.search = AsyncMock(return_value=[])
     
     mock_llm_service = MagicMock()
-    mock_llm_service.generate = AsyncMock(side_effect=[
-        "standalone: Where is the data?",
-        "Fallback answer."
-    ])
+    mock_llm_service.generate = AsyncMock(return_value="Fallback answer.")
     
     # We start with a SimplePrompt (or any mock prompt)
     initial_prompt = SimplePrompt()
@@ -143,16 +139,20 @@ def test_chat_service_generate_empty_results():
         assert len(response.sources) == 0
         
         # Verify retrieval service call
-        mock_retrieval_service.search.assert_called_once_with(query="standalone: Where is the data?", dataset_id="ds1")
+        mock_retrieval_service.search.assert_called_once_with(query="Where is the data?", dataset_id="ds1")
         
         # Verify prompt became BlankPrompt
         assert isinstance(service.prompt, BlankPrompt)
         
         # Verify LLM generation call
-        expected_blank_prompt = service.prompt.generate_prompt("standalone: Where is the data?", "", "history context")
+        expected_blank_prompt = service.prompt.generate_prompt("Where is the data?", "", "history context")
         mock_llm_service.generate.assert_any_call(expected_blank_prompt)
 
     asyncio.run(run_test())
+
+
+def test_chat_service_builds_local_four_word_title():
+    assert ChatService._build_conversation_title("How does gradient descent work?") == "How does gradient descent"
 
 if __name__ == "__main__":
     test_chat_service_build_source()

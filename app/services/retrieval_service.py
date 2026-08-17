@@ -23,7 +23,7 @@ class RetrievalService:
             # -----------------------------------
 
             # NEW: Sinh cả dense và sparse query vector rồi gọi hybrid search
-            query_vector = self.embedding_service.embed_text(query)
+            query_vector = await self.embedding_service.embed_text(query)
             sparse_query_vector = self.sparse_embedding_service.embed_text(query)
             return await self.qdrant_repo.search(
                 query_vector=query_vector,
@@ -35,4 +35,3 @@ class RetrievalService:
         except Exception as e:
             raise HTTPException(status_code= 500, detail= str(e))
 
-    

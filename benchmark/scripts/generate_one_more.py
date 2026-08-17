@@ -1,6 +1,6 @@
 import json
 import asyncio
-from app.llm.groq import GroqModel
+from app.llm.llm_router import LLMRouter
 
 async def main():
     # Load chunks
@@ -25,7 +25,7 @@ async def main():
         print(f"Already have {len(questions)} questions. No need to generate more.")
         return
         
-    router = GroqModel()
+    router = LLMRouter()
     prompt = f"""You are a RAG evaluator. Your task is to generate a high-quality, non-trivial, clear question and its ground truth answer based on the provided source text.
 The question must be fully answerable using ONLY the text provided. Do not use external knowledge or assume facts not mentioned in the text.
 Avoid simple or trivial questions (e.g., "What is the title of the document?" or "Who wrote this?"). Instead, focus on concepts, definitions, rules, or relationships explained in the text.

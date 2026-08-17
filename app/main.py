@@ -18,7 +18,7 @@ app.add_middleware(
 app.include_router(document_router)
 app.include_router(chat_router)
 
-app.mount("/web", StaticFiles(directory="web"), name="web")
+app.mount("/web", StaticFiles(directory="web", html=True), name="web")
 
 @app.get("/")
 def health_check():
