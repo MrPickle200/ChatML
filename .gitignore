@@ -1,7 +1,6 @@
 __pycache__/
 data/
 .pytest_cache/
-tests/
 
 .env
 TASK.md

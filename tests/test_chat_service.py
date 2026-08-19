@@ -4,7 +4,6 @@ import pytest
 from app.services.chat_service import ChatService
 from app.models.chat import Source, ChatResponse
 from app.models.retrieved_chunk import RetrievedChunk
-from app.prompts.blank import BlankPrompt
 from app.prompts.simple import SimplePrompt
 
 def test_chat_service_build_source():
@@ -141,21 +140,15 @@ def test_chat_service_generate_empty_results():
         # Verify retrieval service call
         mock_retrieval_service.search.assert_called_once_with(query="Where is the data?", dataset_id="ds1")
         
-        # Verify prompt became BlankPrompt
-        assert isinstance(service.prompt, BlankPrompt)
+        # The configured prompt remains reusable for later requests.
+        assert service.prompt is initial_prompt
         
-        # Verify LLM generation call
-        expected_blank_prompt = service.prompt.generate_prompt("Where is the data?", "", "history context")
-        mock_llm_service.generate.assert_any_call(expected_blank_prompt)
+        # Verify the graph selected the no-results prompt for this request.
+        generated_prompt = mock_llm_service.generate.call_args.args[0]
+        assert "provided documents do not contain" in generated_prompt
 
     asyncio.run(run_test())
 
 
 def test_chat_service_builds_local_four_word_title():
     assert ChatService._build_conversation_title("How does gradient descent work?") == "How does gradient descent"
-
-if __name__ == "__main__":
-    test_chat_service_build_source()
-    test_chat_service_generate_success_with_results()
-    test_chat_service_generate_empty_results()
-    print("ChatService tests passed successfully!")

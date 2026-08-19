@@ -1,29 +1,51 @@
-from app.services.retrieval_service import RetrievalService
-from app.llm.base import LLMService 
-from app.prompts.base import BasePrompt
-from app.prompts.blank import BlankPrompt
-from app.models.chat import Source, ChatResponse
-from app.models.retrieved_chunk import RetrievedChunk
-from app.services.conversation_service import ConversationService
-from app.services.context_builder_service import ContextBuilderService
-from datetime import datetime, timezone
-from uuid import uuid4
 import asyncio
+from datetime import datetime, timezone
+from typing import Protocol
+from uuid import uuid4
+
+from app.graph.research_graph import ResearchGraph
+from app.llm.base import LLMService
+from app.models.chat import ChatResponse, Source
+from app.models.research_state import ResearchState
+from app.models.retrieved_chunk import RetrievedChunk
+from app.prompts.base import BasePrompt
+from app.services.context_builder_service import ContextBuilderService
+from app.services.conversation_service import ConversationService
+from app.services.query_rewrite_service import QueryRewriteService
+from app.services.retrieval_service import RetrievalService
+
+
+class GraphRunner(Protocol):
+    async def ainvoke(self, state: ResearchState) -> ResearchState: ...
+
 
 class ChatService:
     def __init__(
         self,
-        retrieval_service : RetrievalService,
-        conversation_service : ConversationService,
-        llm_service : LLMService,
-        context_builder_service : ContextBuilderService, 
-        prompt : BasePrompt
+        retrieval_service: RetrievalService,
+        conversation_service: ConversationService,
+        llm_service: LLMService,
+        context_builder_service: ContextBuilderService,
+        prompt: BasePrompt,
+        graph: GraphRunner | None = None,
+        query_rewrite_service: QueryRewriteService | None = None,
     ):
         self.retrieval_service = retrieval_service
         self.conversation_service = conversation_service
         self.llm_service = llm_service
         self.context_builder_service = context_builder_service
         self.prompt = prompt
+        query_rewrite_service = query_rewrite_service or QueryRewriteService(
+            conversation_service=conversation_service,
+            llm_service=llm_service,
+        )
+        self.graph = graph or ResearchGraph(
+            query_rewrite_service=query_rewrite_service,
+            retrieval_service=retrieval_service,
+            context_builder_service=context_builder_service,
+            llm_service=llm_service,
+            prompt=prompt,
+        )
 
     def _build_source(self, retrieval_results: list[RetrievedChunk], save_into_db = False) -> list[Source] | list[dict]:
         if save_into_db:
@@ -61,23 +83,6 @@ class ChatService:
         }
         return metadata
 
-    async def _generate_standalone_question(self, question : str, currently_messages : list):
-        if not currently_messages:
-            return question
-
-        prompt = f"""
-            === SYSTEM ===
-            Your task is to use conversation history to resolve current question into a standalone question, 
-            which means no ambigous object in the sentence (like it, they, them, ...) 
-
-            === CONVERSATION HISTORY ===
-            {currently_messages}
-
-            === CURRENT QUESTON ===
-            {question}
-        """
-        return await self.llm_service.generate(prompt) 
-
     @staticmethod
     def _build_conversation_title(question: str) -> str:
         words = question.strip().split()
@@ -104,25 +109,29 @@ class ChatService:
         return await self.conversation_service.get_history_message(conversation_id)
 
     async def generate(
-            self, question: str, 
-            dataset_id: str, 
-            conversation_id : str
-        ) -> str:
-        history_messages = await self.conversation_service.get_history_message(conversation_id)
-        currently_messages = [
-                {msg["role"].upper() : msg["content"]} for msg in history_messages[-10 : ]
-            ]
-        standalone_question = await self._generate_standalone_question(question, currently_messages)
-        
-        retrieval_results = await self.retrieval_service.search(query= standalone_question, dataset_id= dataset_id)
-        if len(retrieval_results) == 0:
-            self.prompt = BlankPrompt()
+        self,
+        question: str,
+        dataset_id: str,
+        conversation_id: str,
+    ) -> ChatResponse:
+        result = await self.graph.ainvoke(
+            {
+                "query": question,
+                "dataset_id": dataset_id,
+                "conversation_id": conversation_id,
+                "rewritten_query": None,
+                "retrieved_chunks": [],
+                "context": None,
+                "history_context": None,
+                "answer": None,
+            }
+        )
+        retrieval_results = result["retrieved_chunks"]
+        answer = result["answer"]
+        if answer is None:
+            raise RuntimeError("Research graph completed without an answer")
 
         sources = self._build_source(retrieval_results)
-        context, history_context = await self.context_builder_service.build_context(conversation_id, retrieval_results)
-        #prompt = self.prompt.generate_prompt(question, context, history_context)
-        prompt = self.prompt.generate_prompt(standalone_question, context, history_context)
-        answer = await self.llm_service.generate(prompt)
 
         if conversation_id == "null":
             conversation_id = str(uuid4())
